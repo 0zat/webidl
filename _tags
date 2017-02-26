@@ -1,0 +1,4 @@
+true: package(ppx_deriving.show), use_menhir, linkall
+"src/ast": include
+"src/syntax": include
+"src": include

@@ -1,0 +1,5 @@
+name="webidl"
+version="0.1"
+requires="ppx_deriving.show"
+archive(byte)="libwebidl.cma"
+archive(native)="libwebidl.cmxa"
