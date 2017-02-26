@@ -1,24 +1,16 @@
 opam-version: "1.2"
-name: "webidl"
-version: "0.1"
-maintainer: "0zat"
+maintainer: "0zat <0.zat.zer0@gmail.com>"
 authors: ["0zat"]
 homepage: "https://github.com/0zat/webidl"
 bug-reports: "https://github.com/0zat/webidl"
 dev-repo: "git+https://github.com/0zat/webidl.git"
-available: [ ocaml-version >= "4.03.0"]
-build: [
-  ["ocaml" "setup.ml" "build"] 
-]
-install: [
-  ["ocaml" "setup.ml" "install"] 
-]
-remove: [
-  ["ocaml" "setup.ml" "remove"]
-]
+build: ["ocaml" "setup.ml" "build"]
+install: ["ocaml" "setup.ml" "install"]
+remove: ["ocaml" "setup.ml" "remove"]
 depends: [
-  "ocamlfind" {build}
-  "ocamlbuild" {build}
-  "menhir"
-  "ppx_deriving"
+  "ocamlfind" {build & >= "1.7.1"}
+  "ocamlbuild" {build & >= "0.9.3"}
+  "menhir" {build & >= "20170101"}
+  "ppx_deriving" { >= "4.1" }
 ]
+available: [ocaml-version >= "4.03.0"]
