@@ -1,1 +1,1 @@
-true: package(ppx_deriving.show), package(webidl), use_menhir
+true: package(webidl)

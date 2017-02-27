@@ -1,8 +1,8 @@
 #!/usr/bin/env ocaml
 
-let compile_cmxa = "ocamlbuild -use-ocamlfind libwebidl.cmxa"
-let compile_cma = "ocamlbuild -use-ocamlfind libwebidl.cma"
-let install = "ocamlfind install webidl META _build/src/ast/ast.cmi _build/src/webidl.cmi _build/src/libwebidl.cma _build/src/libwebidl.cmxa" 
+let compile_cmxa = "ocamlbuild -use-ocamlfind webidl.cmx"
+let compile_cma = "ocamlbuild -use-ocamlfind webidl.cmo"
+let install = "ocamlfind install webidl META _build/src/lib/webidl.cmi _build/src/lib/webidl.cmo _build/src/lib/webidl.cmx" 
 let remove = "ocamlfind remove webidl"
 
 let exec str =

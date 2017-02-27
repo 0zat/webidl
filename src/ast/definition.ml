@@ -19,4 +19,4 @@ type definition = [
   | `Implements of string * string
 ] [@@deriving show]
 
-
+type definitions = definition with_extAttr list [@@deriving show]

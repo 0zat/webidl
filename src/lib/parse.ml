@@ -1,3 +1,4 @@
+type ast = Ast.Definition.definitions [@@deriving show]
 
 type syntax_error = {
   src : string ;
@@ -20,9 +21,9 @@ let pos_to_error src lexbuf =
 let main ?(trace = false) src_name lexbuf =
   let _ = Parsing.set_trace trace in
   try
-    Parser.main Lexer.read lexbuf 
+    Syntax.Parser.main Syntax.Lexer.read lexbuf 
   with
-  | Parser.Error ->
+  | Syntax.Parser.Error ->
     let syntax_error = pos_to_error src_name lexbuf in
     raise (Syntax_error syntax_error)
 
