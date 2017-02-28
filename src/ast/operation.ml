@@ -12,6 +12,5 @@ type special = [
 type operation = { 
   specials : special list;
   type_ : return_type;
-  ident : string option;
-  arguments : argument with_extAttr list;
+  arguments : string option * (argument with_extAttr list);
 } [@@deriving show]

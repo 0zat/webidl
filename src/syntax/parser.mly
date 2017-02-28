@@ -190,12 +190,12 @@ defaultValue :
     | LBRACKET RBRACKET { `Empty_sequence }
 
 operation :
-    | returnType operationRest { {specials = []; type_ = $1; ident = fst $2; arguments = snd $2} }
+    | returnType operationRest { {specials = []; type_ = $1; arguments = $2} }
     | specialOperation { $1 }
 
 specialOperation :
     | special specials returnType operationRest 
-    { {specials = $1 :: $2; type_ = $3; ident = fst $4; arguments = snd $4} }
+    { {specials = $1 :: $2; type_ = $3; arguments = $4} }
 
 specials :
     | special specials { $1 :: $2 }
@@ -245,8 +245,8 @@ stringifier :
     | STRINGIFIER stringifierRest { $2 }
 
 stringifierRest :
-    | readOnly attributeRest { `Attribute {is_read_only = $1; type_ = fst $2; name = snd $2} }
-    | returnType operationRest { `Operation($1, (fst $2), snd $2) }
+    | readOnly attributeRest { `Attribute {is_read_only = $1; attribute = $2} }
+    | returnType operationRest { `Operation($1, $2) }
     | SEMICOLON { `None }
 
 serializer :
@@ -281,8 +281,8 @@ staticMember :
     | STATIC staticMemberRest { $2 }
 
 staticMemberRest :
-    | readOnly attributeRest { `Attribute {is_read_only = $1; type_ = fst $2; name = snd $2} }
-    | returnType operationRest { `Operation($1, fst $2, snd $2)}
+    | readOnly attributeRest { `Attribute {is_read_only = $1; attribute = $2} }
+    | returnType operationRest { `Operation($1, $2)}
 
 iterable :
     | ITERABLE LT types optionalType GT SEMICOLON { ($3, $4) }
@@ -313,8 +313,8 @@ namespaceMembers :
     { {extAttr = $1; value = $2} :: $3 }
 
 namespaceMember :
-    | returnType operationRest { `Operation($1, (fst $2), snd $2) }
-    | READONLY attributeRest { `Attribute {is_read_only = true; type_ = fst $2; name = snd $2} }
+    | returnType operationRest { `Operation($1, $2) }
+    | READONLY attributeRest { `Attribute {is_read_only = true; attribute = $2} }
 
 dictionary :
     | DICTIONARY IDENTIFIER inheritance LBRACE dictionaryMembers RBRACE SEMICOLON 

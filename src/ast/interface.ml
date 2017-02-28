@@ -26,7 +26,7 @@ type serializer = [
 
 type static_member = [
   | `Attribute of read_only_attribute
-  | `Operation of return_type * string option * argument with_extAttr list
+  | `Operation of return_type * (string option * argument with_extAttr list)
 ] [@@deriving show]
 
 type stringifier = [
