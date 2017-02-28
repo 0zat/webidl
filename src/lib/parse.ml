@@ -4,6 +4,7 @@ type src_type =
   | File
   | Channel
   | String
+  [@@deriving show]
 
 type syntax_error = {
   src : string ;
