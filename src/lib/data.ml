@@ -1,4 +1,4 @@
-(* convert ast to OCaml simplified data *)
+(* simplified data of ast *)
 
 type primitive = [
   | `Boolean 
@@ -55,14 +55,14 @@ type ('types, 'return_type) nonany_aux = [
 ] [@@deriving show]
 
 type  ('types, 'return_type) types_aux = [
-    |  ('types, 'return_type) nonany_aux
-    | `Any
-    | `Union of  ('types, 'return_type) nonany_aux list
+  |  ('types, 'return_type) nonany_aux
+  | `Any
+  | `Union of  ('types, 'return_type) nonany_aux list
 ] [@@deriving show]
 
 type  ('types, 'return_type) return_type_aux = [
-    | `Void
-    |  ('types, 'return_type) types_aux
+  | `Void
+  |  ('types, 'return_type) types_aux
 ] [@@deriving show]
 
 type types = (types, return_type) types_aux [@@deriving show]
@@ -93,10 +93,37 @@ type necessity = [
   | `Required of [`Variadic | `Fixed]
 ] [@@deriving show]
 
+type argument_name = [
+  | `Attribute   
+  | `Callback   
+  | `Const   
+  | `Deleter   
+  | `Dictionary   
+  | `Enum   
+  | `Getter   
+  | `Implements   
+  | `Inherit   
+  | `Interface   
+  | `Iterable   
+  | `Legacycaller   
+  | `Maplike   
+  | `Namespace   
+  | `Partial   
+  | `Required   
+  | `Serializer   
+  | `Setlike   
+  | `Setter   
+  | `Static   
+  | `Stringifier   
+  | `Typedef   
+  | `Unrestricted 
+  | `Ident of string
+] [@@deriving show]
+
 type argument = {
   extended_attributes : extended_attribute list ;
   type_ : types ;
-  name : Ast.Argument.argument_name ;
+  name : argument_name ;
   necessity : necessity
 } [@@deriving show]
 
@@ -110,12 +137,19 @@ type attribute = {
   extended_attributes : extended_attribute list ;
   specifiers : [ `Static | `Readonly | `Inherit ] list ;
   type_ : types ;
-  name : Ast.Attribute.attribute_name ;
+  name : [ `Ident of string | `Required ] ;
 } [@@deriving show]
+
+type special = [
+  | `Getter 
+  | `Setter 
+  | `Deleter 
+  | `Legacycaller 
+] [@@deriving show]
 
 type operation = { 
   extended_attributes : extended_attribute list ;
-  specifiers : [ `Static | Ast.Operation.special ] list ;
+  specifiers : [ `Static | special ] list ;
   type_ : return_type ;
   ident : string option ;
   arguments : argument list ;
@@ -147,10 +181,16 @@ type namespace = {
   namespace_members : namespace_member list;
 } [@@deriving show]
 
+type pattern_list = [
+  | `Getter
+  | `Identifiers of string list
+  | `None
+] [@@deriving show]
+
 type serializer = [
   | `Operation of operation
-  | `Pattern_map of Ast.Interface.pattern_map
-  | `Pattern_list of Ast.Interface.pattern_list
+  | `Pattern_map of [ pattern_list | `Inherit of string list]
+  | `Pattern_list of pattern_list
   | `Ident of string
   | `None
 ] [@@deriving show]
