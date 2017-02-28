@@ -36,7 +36,9 @@ type buffer = [
   | `Float64array 
 ] [@@deriving show]
 
-type non_any_non_rec = [
+type ('return_type, 'types) non_any_aux = [
+  | `Promise of 'return_type
+  | `Sequence of 'types null
   | `Primitive of primitive null
   | `String of string_type null
   | `Ident of string null
@@ -44,49 +46,34 @@ type non_any_non_rec = [
   | `Error of unit null
   | `Domexception of unit null
   | `Buffer of buffer null
+  | `Frozen_array of 'types null
+  | `Record of (string_type * 'types) null
 ] [@@deriving show]
 
-type non_any = [
-  | `Promise of return_type
-  | `Sequence of types null
-  | non_any_non_rec
-  | `Frozen_array of types null
-  | `Record of (string_type * types) null
-] [@@deriving show]
+type ('return_type, 'types) union_aux = [
+    | `Or of ('return_type, 'types) union_member_aux list
+  ] [@@deriving show]
 
-(* any | non_any | union *)
-and types = [
+(* non_any | union  *)
+and ('return_type, 'types) union_member_aux = [
+    | ('return_type, 'types) non_any_aux
+    | `Union of ('return_type, 'types) union_aux null
+  ] [@@deriving show]
+
+type ('return_type, 'types) types_aux = [
   | `Any 
-  | `Promise of return_type
-  | `Sequence of types null
-  | non_any_non_rec
-  | `Frozen_array of types null
-  | `Record of (string_type * types) null
-  | `Union of union null
+  | ('return_type, 'types) non_any_aux
+  | `Union of ('return_type, 'types) union_aux null
 ] [@@deriving show]
 
 (* void | types *)
-and return_type = [
-  | `Void
-  | `Any 
-  | `Promise of return_type
-  | `Sequence of types null
-  | non_any_non_rec
-  | `Frozen_array of types null
-  | `Record of (string_type * types) null
-  | `Union of union null
-] [@@deriving show]
+type ('return_type, 'types) return_type_aux = [
+    | `Void
+    | ('return_type, 'types) types_aux 
+  ] [@@deriving show]
 
-and union = [
-  | `Or of union_member list
-] [@@deriving show]
+type types = (return_type, types) types_aux [@@deriving show]
+and return_type = (return_type, types) return_type_aux [@@deriving show]
 
-(* non_any | union  *)
-and union_member = [
-  | `Promise of return_type
-  | `Sequence of types null
-  | non_any_non_rec
-  | `Frozen_array of types null
-  | `Record of (string_type * types) null
-  | `Union of union null
-] [@@deriving show]
+type union = (return_type, types) union_aux
+type union_member = (return_type, types) union_member_aux

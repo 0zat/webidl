@@ -1,7 +1,7 @@
 true: package(ppx_deriving.show), use_menhir, linkall
 <src/ast/{types,const,argument,extended,operation,attribute,interface,dictionary,namespace,definition}.cmx>: for-pack(Ast),for-pack(Webidl.Ast)
 <src/syntax/{lexer,parser}.cmx>: for-pack(Syntax),for-pack(Webidl.Syntax)
-<src/{syntax/syntax,ast/ast,lib/parse}.cmx>: for-pack(Webidl)
+<src/{syntax/syntax,ast/ast,lib/parse,lib/data}.cmx>: for-pack(Webidl)
 "src/ast": include
 "src/syntax": include
 "src/lib": include
