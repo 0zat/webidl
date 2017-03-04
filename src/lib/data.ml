@@ -33,7 +33,7 @@ type buffer = [
   | `Float64array 
 ] [@@deriving show]
 
-type 'types nullable = [
+type ('types, 'return_type) nullable_aux = [
   | primitive
   | string_type
   | buffer
@@ -46,18 +46,22 @@ type 'types nullable = [
   | `Record of string_type * 'types
 ] [@@deriving show]
 
-type 'types null = [`Nullable of 'types nullable] [@@deriving show]
+(* inside nullable *)
+type ('types, 'return_type) null_aux = [
+  | ('types, 'return_type) nullable_aux 
+  | `Union of ('types, 'return_type) non_any_aux list
+]
 
-type ('types, 'return_type) nonany_aux = [
-  | 'types nullable
-  | 'types null
+and ('types, 'return_type) non_any_aux = [
   | `Promise of 'return_type
+  | ('types, 'return_type) nullable_aux
+  | `Nullable of ('types, 'return_type) null_aux
+  | `Union of ('types, 'return_type) non_any_aux list
 ] [@@deriving show]
 
-type  ('types, 'return_type) types_aux = [
-  |  ('types, 'return_type) nonany_aux
+type ('types, 'return_type) types_aux = [
+  |  ('types, 'return_type) non_any_aux
   | `Any
-  | `Union of  ('types, 'return_type) nonany_aux list
 ] [@@deriving show]
 
 type  ('types, 'return_type) return_type_aux = [
@@ -67,6 +71,9 @@ type  ('types, 'return_type) return_type_aux = [
 
 type types = (types, return_type) types_aux [@@deriving show]
 and return_type = (types, return_type) return_type_aux [@@deriving show]
+
+type non_any = (types, return_type) non_any_aux
+type null = (types, return_type) null_aux
 
 type const_value = [
   | `Bool of bool
@@ -80,7 +87,7 @@ type const_type = [
   | `Ident of string
 ]  [@@deriving show]
 
-type const = const_type null * string * const_value [@@deriving show]
+type const = [const_type | `Nullable of const_type] * string * const_value [@@deriving show]
 
 type default_value = [
   | `Const of const_value
@@ -164,6 +171,7 @@ type dictionary_member = {
 } [@@deriving show]
 
 type dictionary = {
+  extended_attributes : extended_attribute list ;
   ident : string ;
   inheritance : string option ;
   dictionary_members : dictionary_member list;
@@ -177,6 +185,7 @@ type operation_or_attribute = [
 type namespace_member = operation_or_attribute [@@deriving show]
 
 type namespace = {
+  extended_attributes : extended_attribute list ;
   ident : string ;
   namespace_members : namespace_member list;
 } [@@deriving show]
@@ -207,6 +216,7 @@ type interface_member = [
 ] [@@deriving show]
 
 type interface = {
+  extended_attributes : extended_attribute list ;
   ident : string ;
   inheritance : string option ;
   interface_members : interface_member list;
@@ -219,7 +229,7 @@ type partial = [
 ] [@@deriving show]
 
 type definition = [
-  | `Callback of string * return_type * (argument list)
+  | `Callback of extended_attribute * string * return_type * (argument list)
   | `Callback_interface of interface
   | `Interface of interface
   | `Namespace of namespace

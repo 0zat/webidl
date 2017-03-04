@@ -50,30 +50,25 @@ type ('return_type, 'types) non_any_aux = [
   | `Record of (string_type * 'types) null
 ] [@@deriving show]
 
-type ('return_type, 'types) union_aux = [
-    | `Or of ('return_type, 'types) union_member_aux list
-  ] [@@deriving show]
-
 (* non_any | union  *)
-and ('return_type, 'types) union_member_aux = [
+type ('return_type, 'types) union_member_aux = [
     | ('return_type, 'types) non_any_aux
-    | `Union of ('return_type, 'types) union_aux null
+    | `Union of ('return_type, 'types) union_member_aux list null
   ] [@@deriving show]
 
 type ('return_type, 'types) types_aux = [
   | `Any 
-  | ('return_type, 'types) non_any_aux
-  | `Union of ('return_type, 'types) union_aux null
+  | ('return_type, 'types) union_member_aux
 ] [@@deriving show]
 
 (* void | types *)
 type ('return_type, 'types) return_type_aux = [
-    | `Void
-    | ('return_type, 'types) types_aux 
-  ] [@@deriving show]
+  | `Void
+  | ('return_type, 'types) types_aux 
+] [@@deriving show]
 
 type types = (return_type, types) types_aux [@@deriving show]
 and return_type = (return_type, types) return_type_aux [@@deriving show]
 
-type union = (return_type, types) union_aux
+type non_any = (return_type, types) non_any_aux
 type union_member = (return_type, types) union_member_aux

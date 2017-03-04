@@ -374,7 +374,7 @@ singleType :
 
 unionType :
     | LPAR unionMemberType OR unionMemberType unionMemberTypes RPAR 
-    { `Or($2 :: $4 :: $5) }
+    { $2 :: $4 :: $5 }
 
 unionMemberType :
     | nonAnyType { ($1 :> union_member) }
