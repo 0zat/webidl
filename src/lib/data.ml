@@ -1,37 +1,10 @@
 (* simplified data of ast *)
 
-type primitive = [
-  | `Boolean 
-  | `Byte 
-  | `Octet 
-  | `Unrestricted of [ `Float | `Double ]
-  | `Float 
-  | `Double 
-  | `Unsigned of [ `Short | `Long | `Long_long ]
-  | `Short 
-  | `Long 
-  | `Long_long 
-] [@@deriving show]
+type primitive = Ast.Types.primitive [@@deriving show]
 
-type string_type = [
-  | `Bytestring 
-  | `Domstring 
-  | `Usvstring
-] [@@deriving show]
+type string_type = Ast.Types.string_type [@@deriving show]
 
-type buffer = [
-  | `Arraybuffer 
-  | `Dataview 
-  | `Int8array 
-  | `Int16array 
-  | `Int32array 
-  | `Uint8array 
-  | `Uint16array 
-  | `Uint32array 
-  | `Uint8clampedarray 
-  | `Float32array 
-  | `Float64array 
-] [@@deriving show]
+type buffer = Ast.Types.buffer [@@deriving show]
 
 type ('types, 'return_type) nullable_aux = [
   | primitive
@@ -75,17 +48,9 @@ and return_type = (types, return_type) return_type_aux [@@deriving show]
 type non_any = (types, return_type) non_any_aux
 type null = (types, return_type) null_aux
 
-type const_value = [
-  | `Bool of bool
-  | `Float of float
-  | `Int of int
-  | `Null
-] [@@deriving show]
+type const_value = Ast.Const.const_value [@@deriving show]
 
-type const_type = [
-  | primitive
-  | `Ident of string
-]  [@@deriving show]
+type const_type = Ast.Const.const_type [@@deriving show]
 
 type const = [const_type | `Nullable of const_type] * string * const_value [@@deriving show]
 
@@ -100,32 +65,7 @@ type necessity = [
   | `Required of [`Variadic | `Fixed]
 ] [@@deriving show]
 
-type argument_name = [
-  | `Attribute   
-  | `Callback   
-  | `Const   
-  | `Deleter   
-  | `Dictionary   
-  | `Enum   
-  | `Getter   
-  | `Implements   
-  | `Inherit   
-  | `Interface   
-  | `Iterable   
-  | `Legacycaller   
-  | `Maplike   
-  | `Namespace   
-  | `Partial   
-  | `Required   
-  | `Serializer   
-  | `Setlike   
-  | `Setter   
-  | `Static   
-  | `Stringifier   
-  | `Typedef   
-  | `Unrestricted 
-  | `Ident of string
-] [@@deriving show]
+type argument_name = Ast.Argument.argument_name [@@deriving show]
 
 type argument = {
   extended_attributes : extended_attribute list ;
@@ -147,12 +87,7 @@ type attribute = {
   name : [ `Ident of string | `Required ] ;
 } [@@deriving show]
 
-type special = [
-  | `Getter 
-  | `Setter 
-  | `Deleter 
-  | `Legacycaller 
-] [@@deriving show]
+type special = Ast.Operation.special [@@deriving show]
 
 type operation = { 
   extended_attributes : extended_attribute list ;
@@ -190,11 +125,7 @@ type namespace = {
   namespace_members : namespace_member list;
 } [@@deriving show]
 
-type pattern_list = [
-  | `Getter
-  | `Identifiers of string list
-  | `None
-] [@@deriving show]
+type pattern_list = Ast.Interface.pattern_list [@@deriving show]
 
 type serializer = [
   | `Operation of operation

@@ -53,7 +53,6 @@ and of_return_type : Ast.Types.return_type -> Data.return_type = function
   | `Void -> `Void
   | #Ast.Types.types as types -> (of_types types :> Data.return_type)
 
-(*
 let rec of_extAttr = function
   | `No_args ident -> `Argument_list(ident, [])
   | `Argument_list(ident, arguments) -> `Argument_list(ident, List.map of_argument arguments)
@@ -66,15 +65,17 @@ and of_argument argument =
   let extended_attributes = List.map of_extAttr argument.extAttr in
   match argument.value with
   | `Optional {type_; name; default} -> 
+    let type_ = of_types type_ in
     {type_; name; extended_attributes; necessity = `Optional default}
-  | `Required {type_; name; is_variadic} ->  
+  | `Required {type_; name; is_variadic} -> 
+    let type_ = of_types type_ in 
     let necessity = 
-      if is_variadic then 
-        `Required `Variadic 
-      else `Fixed 
+      match is_variadic with
+      | true -> `Required `Variadic 
+      | false -> `Required `Fixed 
     in
     {type_; name; extended_attributes; necessity}
-*)
+
 (*
   let of_interface_member member =
     let extAttr = member.extAttr in
