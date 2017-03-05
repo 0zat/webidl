@@ -1,5 +1,5 @@
 opam-version: "1.2"
-version: "0.2"
+version: "0.5"
 maintainer: "0zat <0.zat.zer0@gmail.com>"
 authors: ["0zat"]
 homepage: "https://github.com/0zat/webidl"
