@@ -26,17 +26,17 @@ let () =
     |> print_string
     |> print_newline
 ```
-1. `Webidl.Parse.data_from_file`
+1. `Webidl.Parse.data_from_file`  
 This function parses webidl from file and generate OCaml data which expresses the webidl.  
 The OCaml data is difined in src/lib/data.ml. Please see it if you would like to know details.  
 You can access webidl by this result.
 
-2. `Webidl.Parse.show_data`
+2. `Webidl.Parse.show_data`  
 print parsed webidl data.
 
-3. `Webidl.Parse.Syntax_error e`
+3. `Webidl.Parse.Syntax_error e`  
 if there is an syntax error, `exception Syntax_error` is raised. 
 `e` is a record which is defined in src/lib/parse.ml   
 
-4. `Webidl.Parse.show_syntax_error`
+4. `Webidl.Parse.show_syntax_error`  
 print infomation of parse error
