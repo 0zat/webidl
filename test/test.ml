@@ -1,8 +1,8 @@
 
 let () =
   try 
-    Webidl.Parse.from_file Sys.argv.(1)
-    |> Webidl.Parse.show_ast
+    Webidl.Parse.data_from_file Sys.argv.(1)
+    |> Webidl.Parse.show_data
     |> print_string
   with
   | Webidl.Parse.Syntax_error e ->

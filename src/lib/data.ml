@@ -1,10 +1,10 @@
 (* simplified data of ast *)
 
-type primitive = Ast.Types.primitive [@@deriving show]
+type primitive = Ast.primitive [@@deriving show]
 
-type string_type = Ast.Types.string_type [@@deriving show]
+type string_type = Ast.string_type [@@deriving show]
 
-type buffer = Ast.Types.buffer [@@deriving show]
+type buffer = Ast.buffer [@@deriving show]
 
 type ('types, 'return_type) nullable_aux = [
   | primitive
@@ -48,9 +48,9 @@ and return_type = (types, return_type) return_type_aux [@@deriving show]
 type non_any = (types, return_type) non_any_aux [@@deriving show]
 type null = (types, return_type) null_aux [@@deriving show]
 
-type const_value = Ast.Const.const_value [@@deriving show]
+type const_value = Ast.const_value [@@deriving show]
 
-type const_type = Ast.Const.const_type [@@deriving show]
+type const_type = Ast.const_type [@@deriving show]
 
 type default_value = [
   | `Const of const_value
@@ -63,7 +63,7 @@ type necessity = [
   | `Required of [`Variadic | `Fixed]
 ] [@@deriving show]
 
-type argument_name = Ast.Argument.argument_name [@@deriving show]
+type argument_name = Ast.argument_name [@@deriving show]
 
 type argument = {
   type_ : types ;
@@ -87,7 +87,7 @@ type attribute = {
   name : [ `Ident of string | `Required ] ;
 } [@@deriving show]
 
-type special = Ast.Operation.special [@@deriving show]
+type special = Ast.special [@@deriving show]
 
 type operation = { 
   specials : special list ;
@@ -122,7 +122,7 @@ type namespace = {
   namespace_members : (extends * namespace_member) list ;
 } [@@deriving show]
 
-type pattern_list = Ast.Interface.pattern_list [@@deriving show]
+type pattern_list = Ast.pattern_list [@@deriving show]
 
 type serializer = [
   | `Operation of string option * ((extends * argument) list)
@@ -178,4 +178,4 @@ type definition = [
   | `Implements of string * string
 ] [@@deriving show]
 
-type definitions = (extends * definition) list
+type definitions = (extends * definition) list [@@deriving show]

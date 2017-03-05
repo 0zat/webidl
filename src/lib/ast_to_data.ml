@@ -1,13 +1,4 @@
-open Ast.Types
-open Ast.Const
-open Ast.Argument
-open Ast.Extended
-open Ast.Operation
-open Ast.Attribute
-open Ast.Interface
-open Ast.Dictionary
-open Ast.Namespace
-open Ast.Definition
+open Ast
 
 open Data
 
@@ -16,7 +7,7 @@ let of_null cond (dst : Data.null) =
   | false, _ -> (dst :> Data.non_any)
   | true, dst -> `Nullable dst
 
-let rec of_non_any : Ast.Types.non_any -> Data.non_any = function
+let rec of_non_any : Ast.non_any -> Data.non_any = function
   | `Promise return_type -> `Promise(of_return_type return_type)
   | `Sequence {type_; has_null} -> 
     let types = of_types type_ in
@@ -37,21 +28,21 @@ let rec of_non_any : Ast.Types.non_any -> Data.non_any = function
     let string_type, types = type_ in
     of_null has_null (`Record(string_type, of_types types))
 
-and of_union_member : Ast.Types.union_member -> Data.non_any = function
+and of_union_member : Ast.union_member -> Data.non_any = function
   | `Union {type_; has_null} -> 
     let members = List.map of_union_member type_ in
     of_null has_null (`Union members)
-  | #Ast.Types.non_any as non_any -> 
+  | #Ast.non_any as non_any -> 
     let member = of_non_any non_any in
     member
 
-and of_types : Ast.Types.types -> Data.types = function
+and of_types : Ast.types -> Data.types = function
   | `Any -> `Any
-  | #Ast.Types.union_member as union -> (of_union_member union :> Data.types)
+  | #Ast.union_member as union -> (of_union_member union :> Data.types)
 
-and of_return_type : Ast.Types.return_type -> Data.return_type = function
+and of_return_type : Ast.return_type -> Data.return_type = function
   | `Void -> `Void
-  | #Ast.Types.types as types -> (of_types types :> Data.return_type)
+  | #Ast.types as types -> (of_types types :> Data.return_type)
 
 let of_argument = function
   | `Optional {type_; name; default} -> 
@@ -72,7 +63,7 @@ let of_with_extAttr of_extAttr f {extAttr; value} =
 let of_ext_list of_extAttr f list =
   List.map (of_with_extAttr of_extAttr f) list
 
-let rec of_extAttr : Ast.Extended.extended_attribute -> Data.extended_attribute = function
+let rec of_extAttr : Ast.extended_attribute -> Data.extended_attribute = function
   | `No_args ident -> `Argument_list(ident, [])
   | `Argument_list(ident, arguments) -> 
     `Argument_list(ident, of_ext_list of_extAttr of_argument arguments)
@@ -126,13 +117,13 @@ let of_maplike (key_type, value_type) =
   let value_type = of_types value_type in
   {is_readonly = true; key_type; value_type}
 
-let of_readonly : Ast.Interface.read_only_member -> Data.interface_member = function
+let of_readonly : Ast.read_only_member -> Data.interface_member = function
   | `Attribute attribute -> 
     `Attribute (of_attribute false false true attribute)
   | `Maplike maplike -> `Maplike(of_maplike maplike)
   | `Setlike key_type -> `Setlike {is_readonly = true; key_type= of_types key_type}
 
-let of_interface_member : Ast.Interface.interface_member -> Data.interface_member = function
+let of_interface_member : Ast.interface_member -> Data.interface_member = function
   | `Const const -> `Const(of_const const) 
   | `Operation {specials; type_; arguments} -> 
     let ident, arguments = arguments in
@@ -166,7 +157,7 @@ let of_namespace ident members = {
   namespace_members = of_ext_list of_namespace_member members ;
 }
 
-let of_dictionary_member (member : Ast.Dictionary.dictionary_member) = {
+let of_dictionary_member (member : Ast.dictionary_member) = {
   is_required = member.is_required ; 
   type_ = of_types member.type_ ; 
   ident = member.ident ; 
@@ -179,12 +170,12 @@ let of_dictionary ident inheritance members = {
   dictionary_members =  of_ext_list of_dictionary_member members ;
 }
 
-let of_partial : Ast.Definition.partial -> Data.partial = function
+let of_partial : Ast.partial -> Data.partial = function
   | `Interface {ident; members} -> `Interface(of_interface ident None members)
   | `Dictionary {ident; members} -> `Dictionary(of_dictionary ident None members)
   | `Namespace {ident; members} -> `Namespace(of_namespace ident members) 
 
-let of_definition : Ast.Definition.definition -> Data.definition = function
+let of_definition : Ast.definition -> Data.definition = function
   | `Callback(string, return_type, arguments) -> 
     `Callback(string, of_return_type return_type, of_ext_list of_argument arguments)
   | `Callback_interface {ident; inheritance; members} ->
@@ -199,5 +190,5 @@ let of_definition : Ast.Definition.definition -> Data.definition = function
   | `Typedef(types, string) -> `Typedef(of_types types, string)
   | `Implements(ident, implement) -> `Implements(ident, implement)
 
-let of_difinitions (definitions : Ast.Definition.definitions) : Data.definitions =
+let of_difinitions (definitions : Ast.definitions) : Data.definitions =
   of_ext_list of_definition definitions

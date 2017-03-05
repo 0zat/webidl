@@ -9,16 +9,8 @@
      *  remove readonly from readWriteAttribute
      *  remove some rules which are not called
     *)
-    open Ast.Types
-    open Ast.Const
-    open Ast.Argument
-    open Ast.Extended
-    open Ast.Operation
-    open Ast.Attribute
-    open Ast.Interface
-    open Ast.Dictionary
-    open Ast.Namespace
-    open Ast.Definition
+
+    open Ast
 %}
 
 %token LBRACE RBRACE LBRACKET RBRACKET LPAR RPAR LT GT
@@ -47,7 +39,7 @@
 %token EOF
 
 %start main
-%type <Ast.Definition.definitions> main
+%type <Ast.definitions> main
 %%
 
 main :

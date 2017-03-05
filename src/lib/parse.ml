@@ -1,10 +1,11 @@
-type ast = Ast.Definition.definitions [@@deriving show]
+type ast = Ast.definitions [@@deriving show]
+type data = Data.definitions [@@deriving show]
 
 type src_type = 
   | File
   | Channel
   | String
-  [@@deriving show]
+[@@deriving show]
 
 type syntax_error = {
   src : string ;
@@ -34,15 +35,27 @@ let main ?(trace = false) src src_type lexbuf =
     let syntax_error = get_error_info src src_type lexbuf in
     raise (Syntax_error syntax_error)
 
-let from_string src_name input_string =
+let ast_from_string src_name input_string =
   let lexbuf = Lexing.from_string input_string in
   main src_name String lexbuf
 
-let from_channel src_name input_channel =
+let ast_from_channel src_name input_channel =
   let lexbuf = Lexing.from_channel input_channel in
   main src_name Channel lexbuf
 
-let from_file file_name =
+let ast_from_file file_name =
   let input_channel = open_in file_name in
   let lexbuf = Lexing.from_channel input_channel in
   main file_name File lexbuf
+
+let data_from_string src_name input_string : data =
+  ast_from_string src_name input_string
+  |> Ast_to_data.of_difinitions
+
+let data_from_channel src_name input_channel : data =
+  ast_from_channel src_name input_channel
+  |> Ast_to_data.of_difinitions
+
+let data_from_file file_name : data =
+  ast_from_file file_name 
+  |> Ast_to_data.of_difinitions
