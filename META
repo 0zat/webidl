@@ -1,5 +1,5 @@
 name="webidl"
-version="0.5"
+version="1.0"
 requires="ppx_deriving.show"
 archive(byte)="webidl.cmo"
 archive(native)="webidl.cmx"
