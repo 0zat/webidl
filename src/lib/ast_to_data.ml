@@ -112,15 +112,15 @@ let of_stringifier = function
     `Attribute (of_attribute false false is_readonly attribute)
   | `None -> `None
 
-let of_maplike (key_type, value_type) = 
+let of_maplike is_readonly (key_type, value_type) = 
   let key_type = of_types key_type in
   let value_type = of_types value_type in
-  {is_readonly = true; key_type; value_type}
+  {is_readonly; key_type; value_type}
 
 let of_readonly : Ast.read_only_member -> Data.interface_member = function
   | `Attribute attribute -> 
     `Attribute (of_attribute false false true attribute)
-  | `Maplike maplike -> `Maplike(of_maplike maplike)
+  | `Maplike maplike -> `Maplike(of_maplike true maplike)
   | `Setlike key_type -> `Setlike {is_readonly = true; key_type= of_types key_type}
 
 let of_interface_member : Ast.interface_member -> Data.interface_member = function
@@ -136,8 +136,8 @@ let of_interface_member : Ast.interface_member -> Data.interface_member = functi
   | `Read_only_member member -> of_readonly member  
   | `Read_write_attribute {is_inherit; attribute} ->
     `Attribute (of_attribute false is_inherit false attribute)
-  | `Maplike maplike -> `Maplike(of_maplike maplike)
-  | `Setlike key_type -> `Setlike {is_readonly = true; key_type= of_types key_type}
+  | `Maplike maplike -> `Maplike(of_maplike false maplike)
+  | `Setlike key_type -> `Setlike {is_readonly = false; key_type= of_types key_type}
 
 let of_interface ident inheritance members = {
   ident = ident ;

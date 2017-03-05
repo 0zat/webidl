@@ -1,14 +1,5 @@
-[Exposed=Window]
-callback interface check_ext {
-  [Replaceable] const short test1 = 1;
-  [Constructor(double x, double y)] const short test2 = 1;
-  [NamedConstructor=Image(DOMString src)] unsigned short test3(Node node);
-  [PutForwards=name] stringifier;
-  [Exposed=(Window,Worker)] getter double ();
-};
-
-enum MealType { "rice", "noodles", "other" };
-
+[Exposed=Window,
+Exposed=(Window,Worker)]
 interface check_stringifier {
   stringifier attribute DOMString ident1;
   stringifier DOMString ident2();
@@ -34,11 +25,46 @@ interface check_attribute {
   attribute Test name5;
 };
 
-interface check_operation : Animal {
+interface check_operation : Parent {
   boolean isMouseOver();
   getter any test();
   object f(optional DOMString c = "value");
   void g(Event a, DOMString? b, optional DOMString c, double... d);
   static void h([PutForwards=name] Event a);
-  setter float (a);
+  setter float ();
 };
+
+partial interface check_others {
+  iterable<DOMString>;
+  iterable<DOMString, float>;
+  readonly maplike<DOMString, float>;
+  maplike<DOMString, float>;
+  readonly setlike<DOMString>;
+  setlike<DOMString>;
+};
+
+namespace check_namespace {
+  readonly attribute Vector unit;
+  double dotProduct(Vector x, Vector y);
+  Vector crossProduct(Vector x, Vector y);
+};
+
+dictionary check_dictionary {
+  DOMString identifier = "value";
+  required long req;
+};
+
+enum check_enum { "a", "b", "c" };
+
+callback check_callback = void (DOMString a);
+
+callback interface check_ext {
+  [Replaceable] const short test1 = 1;
+  [Constructor(double x, double y)] const short test2 = 1;
+  [NamedConstructor=Image(DOMString src)] unsigned short test3(Node node);
+  [PutForwards=name] stringifier;
+  [Exposed=(Window,Worker)] getter double ();
+};
+
+typedef sequence<Sq> Seq;
+Implements_test1 implements Implements_test2 ;
