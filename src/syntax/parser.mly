@@ -245,7 +245,7 @@ stringifier :
     | STRINGIFIER stringifierRest { $2 }
 
 stringifierRest :
-    | readOnly attributeRest { `Attribute {is_read_only = $1; attribute = $2} }
+    | readOnly attributeRest { `Attribute {is_readonly = $1; attribute = $2} }
     | returnType operationRest { `Operation($1, $2) }
     | SEMICOLON { `None }
 
@@ -281,7 +281,7 @@ staticMember :
     | STATIC staticMemberRest { $2 }
 
 staticMemberRest :
-    | readOnly attributeRest { `Attribute {is_read_only = $1; attribute = $2} }
+    | readOnly attributeRest { `Attribute {is_readonly = $1; attribute = $2} }
     | returnType operationRest { `Operation($1, $2)}
 
 iterable :
@@ -314,7 +314,7 @@ namespaceMembers :
 
 namespaceMember :
     | returnType operationRest { `Operation($1, $2) }
-    | READONLY attributeRest { `Attribute {is_read_only = true; attribute = $2} }
+    | READONLY attributeRest { `Attribute {is_readonly = true; attribute = $2} }
 
 dictionary :
     | DICTIONARY IDENTIFIER inheritance LBRACE dictionaryMembers RBRACE SEMICOLON 

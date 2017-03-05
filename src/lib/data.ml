@@ -45,14 +45,12 @@ type  ('types, 'return_type) return_type_aux = [
 type types = (types, return_type) types_aux [@@deriving show]
 and return_type = (types, return_type) return_type_aux [@@deriving show]
 
-type non_any = (types, return_type) non_any_aux
-type null = (types, return_type) null_aux
+type non_any = (types, return_type) non_any_aux [@@deriving show]
+type null = (types, return_type) null_aux [@@deriving show]
 
 type const_value = Ast.Const.const_value [@@deriving show]
 
 type const_type = Ast.Const.const_type [@@deriving show]
-
-type const = [const_type | `Nullable of const_type] * string * const_value [@@deriving show]
 
 type default_value = [
   | `Const of const_value
@@ -68,21 +66,23 @@ type necessity = [
 type argument_name = Ast.Argument.argument_name [@@deriving show]
 
 type argument = {
-  extended_attributes : extended_attribute list ;
   type_ : types ;
   name : argument_name ;
   necessity : necessity
 } [@@deriving show]
 
-and extended_attribute = [
-    | `Argument_list of string * (argument list)
-    | `Ident_list of string * (string list)
-    | `Named_arg_list of string * string * (argument list)
-  ] [@@deriving show]
+type extended_attribute = [
+  | `Argument_list of string * ((extended_attribute list * argument) list)
+  | `Ident_list of string * (string list)
+  | `Named_arg_list of string * string * ((extended_attribute list * argument) list)
+] [@@deriving show]
+
+type extends = extended_attribute list [@@deriving show]
 
 type attribute = {
-  extended_attributes : extended_attribute list ;
-  specifiers : [ `Static | `Readonly | `Inherit ] list ;
+  is_static : bool ;
+  is_readonly : bool ;
+  is_inherit : bool ;
   type_ : types ;
   name : [ `Ident of string | `Required ] ;
 } [@@deriving show]
@@ -90,15 +90,14 @@ type attribute = {
 type special = Ast.Operation.special [@@deriving show]
 
 type operation = { 
-  extended_attributes : extended_attribute list ;
-  specifiers : [ `Static | special ] list ;
+  specials : special list ;
+  is_static : bool ;
   type_ : return_type ;
   ident : string option ;
-  arguments : argument list ;
+  arguments : (extends * argument) list ;
 } [@@deriving show]
 
 type dictionary_member = {
-  extended_attributes : extended_attribute list ;
   is_required : bool ;
   type_ : types ;
   ident : string ;
@@ -106,10 +105,9 @@ type dictionary_member = {
 } [@@deriving show]
 
 type dictionary = {
-  extended_attributes : extended_attribute list ;
   ident : string ;
   inheritance : string option ;
-  dictionary_members : dictionary_member list;
+  dictionary_members : (extends * dictionary_member) list ;
 } [@@deriving show]
 
 type operation_or_attribute = [
@@ -120,37 +118,46 @@ type operation_or_attribute = [
 type namespace_member = operation_or_attribute [@@deriving show]
 
 type namespace = {
-  extended_attributes : extended_attribute list ;
   ident : string ;
-  namespace_members : namespace_member list;
+  namespace_members : (extends * namespace_member) list ;
 } [@@deriving show]
 
 type pattern_list = Ast.Interface.pattern_list [@@deriving show]
 
 type serializer = [
-  | `Operation of operation
+  | `Operation of string option * ((extends * argument) list)
   | `Pattern_map of [ pattern_list | `Inherit of string list]
   | `Pattern_list of pattern_list
   | `Ident of string
   | `None
 ] [@@deriving show]
 
+type maplike = {
+  is_readonly : bool ; 
+  key_type : types ; 
+  value_type : types ;
+} [@@deriving show]
+
+type setlike = {
+  is_readonly : bool ; 
+  key_type : types ; 
+} [@@deriving show]
+
 type interface_member = [
-  | `Const of const
-  | `Operation  of operation
+  | `Const of [const_type | `Nullable of const_type] * string * const_value
+  | `Operation of operation
   | `Serializer of serializer
   | `Stringifier of [ operation_or_attribute | `None ]
-  | `Iterable of types * (types option) * (extended_attribute list)
+  | `Iterable of types * (types option) 
   | `Attribute of attribute
-  | `Maplike of types * types * (extended_attribute list)
-  | `Setlike of types * (extended_attribute list)
+  | `Maplike of maplike 
+  | `Setlike of setlike
 ] [@@deriving show]
 
 type interface = {
-  extended_attributes : extended_attribute list ;
   ident : string ;
   inheritance : string option ;
-  interface_members : interface_member list;
+  interface_members : (extends * interface_member) list;
 } [@@deriving show]
 
 type partial = [
@@ -160,13 +167,15 @@ type partial = [
 ] [@@deriving show]
 
 type definition = [
-  | `Callback of extended_attribute * string * return_type * (argument list)
+  | `Callback of string * return_type * ((extends * argument) list)
   | `Callback_interface of interface
   | `Interface of interface
   | `Namespace of namespace
   | `Partial of partial
   | `Dictionary of dictionary
-  | `Enum of extended_attribute * string * (string list)
-  | `Typedef of extended_attribute * types * string
-  | `Implements of extended_attribute * string * string
+  | `Enum of string * (string list)
+  | `Typedef of types * string
+  | `Implements of string * string
 ] [@@deriving show]
+
+type definitions = (extends * definition) list

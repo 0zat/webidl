@@ -53,20 +53,10 @@ and of_return_type : Ast.Types.return_type -> Data.return_type = function
   | `Void -> `Void
   | #Ast.Types.types as types -> (of_types types :> Data.return_type)
 
-let rec of_extAttr = function
-  | `No_args ident -> `Argument_list(ident, [])
-  | `Argument_list(ident, arguments) -> `Argument_list(ident, List.map of_argument arguments)
-  | `Ident(ident, ident_1) -> `Ident_list(ident, [ident_1]) 
-  | `Ident_list(ident, idents) -> `Ident_list(ident, idents) 
-  | `Named_arg_list(ident, name, arguments) 
-    -> `Named_arg_list(ident, name, List.map of_argument arguments)
-
-and of_argument argument = 
-  let extended_attributes = List.map of_extAttr argument.extAttr in
-  match argument.value with
+let of_argument = function
   | `Optional {type_; name; default} -> 
     let type_ = of_types type_ in
-    {type_; name; extended_attributes; necessity = `Optional default}
+    {type_; name; necessity = `Optional default}
   | `Required {type_; name; is_variadic} -> 
     let type_ = of_types type_ in 
     let necessity = 
@@ -74,39 +64,140 @@ and of_argument argument =
       | true -> `Required `Variadic 
       | false -> `Required `Fixed 
     in
-    {type_; name; extended_attributes; necessity}
+    {type_; name; necessity}
 
-(*
-  let of_interface_member member =
-    let extAttr = member.extAttr in
-    match member.value with
-    | `Const   
-    | `Operation  
-    | `Serializer  
-    | `Stringifier 
-    | `Static_member  
-    | `Iterable  
-    | `Read_only_member   
-    | `Read_write_attribute   
-    | `Maplike   
-    | `Setlike  
+let of_with_extAttr of_extAttr f {extAttr; value} =
+  (List.map of_extAttr extAttr, f value)
 
-let of_interface ast_interface extAttr = {
-  extended_attributes = extAttr ;
-  ident = ast_interface.ident ;
-  inheritance = ast_interface.inheritance ;
-  interface_members = List.map of_interface_member ast_interface.members ;
+let of_ext_list of_extAttr f list =
+  List.map (of_with_extAttr of_extAttr f) list
+
+let rec of_extAttr : Ast.Extended.extended_attribute -> Data.extended_attribute = function
+  | `No_args ident -> `Argument_list(ident, [])
+  | `Argument_list(ident, arguments) -> 
+    `Argument_list(ident, of_ext_list of_extAttr of_argument arguments)
+  | `Ident(ident, ident_1) -> `Ident_list(ident, [ident_1]) 
+  | `Ident_list(ident, idents) -> `Ident_list(ident, idents) 
+  | `Named_arg_list(ident, name, arguments) ->
+    `Named_arg_list(ident, name, of_ext_list of_extAttr of_argument arguments)
+
+let of_ext_list f list = of_ext_list of_extAttr f list 
+
+let of_operation is_static specials type_ ident arguments =
+  let type_ = of_return_type type_ in
+  let arguments = of_ext_list of_argument arguments in
+  {is_static; specials; type_; ident; arguments}
+
+let of_attribute is_static is_inherit is_readonly (type_, name) =
+  let type_ = of_types type_ in
+  {is_static; is_inherit; is_readonly; name; type_}
+
+let of_const (type_, ident, value) = 
+  let type_ =
+    match type_.has_null with
+    | true -> `Nullable (type_.type_ :> const_type)
+    | false -> (type_.type_ :> [const_type | `Nullable of const_type])
+  in
+  (type_, ident, value)
+
+let of_serializer = function
+  | `Operation(ident, arguments) -> 
+    `Operation(ident, of_ext_list of_argument arguments)
+  | `Pattern_map pattern_map -> `Pattern_map pattern_map
+  | `Pattern_list pattern_list -> `Pattern_list pattern_list
+  | `Ident ident -> `Ident ident
+  | `None -> `None
+
+let of_static = function 
+  | `Operation(return_type, (ident, arguments)) ->
+    `Operation(of_operation true [] return_type ident arguments)
+  | `Attribute {is_readonly; attribute} -> 
+    `Attribute(of_attribute true false is_readonly attribute)
+
+let of_stringifier = function
+  | `Operation(return_type, (ident, arguments)) ->
+    `Operation(of_operation false [] return_type ident arguments)
+  | `Attribute {is_readonly; attribute} -> 
+    `Attribute (of_attribute false false is_readonly attribute)
+  | `None -> `None
+
+let of_maplike (key_type, value_type) = 
+  let key_type = of_types key_type in
+  let value_type = of_types value_type in
+  {is_readonly = true; key_type; value_type}
+
+let of_readonly : Ast.Interface.read_only_member -> Data.interface_member = function
+  | `Attribute attribute -> 
+    `Attribute (of_attribute false false true attribute)
+  | `Maplike maplike -> `Maplike(of_maplike maplike)
+  | `Setlike key_type -> `Setlike {is_readonly = true; key_type= of_types key_type}
+
+let of_interface_member : Ast.Interface.interface_member -> Data.interface_member = function
+  | `Const const -> `Const(of_const const) 
+  | `Operation {specials; type_; arguments} -> 
+    let ident, arguments = arguments in
+    `Operation(of_operation false specials type_ ident arguments)
+  | `Serializer serializer -> `Serializer(of_serializer serializer)
+  | `Stringifier stringifier -> `Stringifier(of_stringifier stringifier)
+  | `Static_member static -> of_static static
+  | `Iterable(types, None) -> `Iterable(of_types types, None) 
+  | `Iterable(types, Some type_) -> `Iterable(of_types types, Some (of_types type_))
+  | `Read_only_member member -> of_readonly member  
+  | `Read_write_attribute {is_inherit; attribute} ->
+    `Attribute (of_attribute false is_inherit false attribute)
+  | `Maplike maplike -> `Maplike(of_maplike maplike)
+  | `Setlike key_type -> `Setlike {is_readonly = true; key_type= of_types key_type}
+
+let of_interface ident inheritance members = {
+  ident = ident ;
+  inheritance = inheritance ;
+  interface_members =  of_ext_list of_interface_member members ;
 }
 
-let of_definition extAttr = function
-  | `Callback(string, return_type, arguments) -> `Callback(extAttr, string, return_type, arguments)
-  | `Callback_interface interface
-  | `Interface interface
-  | `Namespace namespace
-  | `Partial partial
-  | `Dictionary dictionary
-  | `Enum(string, values) -> `Enum(extAttr, string, values) 
-  | `Typedef(types, string) -> `Typedef(extAttr, types, string)
-  | `Implements(ident, implement) -> `Implements(extAttr, ident, implement)
+let of_namespace_member = function
+  | `Operation(return_type, (ident, arguments)) ->
+    let operation = of_operation false [] return_type ident arguments in
+    `Operation operation
+  | `Attribute {is_readonly; attribute} ->
+    `Attribute (of_attribute false false is_readonly attribute)
 
-  *)
+let of_namespace ident members = {
+  ident = ident ;
+  namespace_members = of_ext_list of_namespace_member members ;
+}
+
+let of_dictionary_member (member : Ast.Dictionary.dictionary_member) = {
+  is_required = member.is_required ; 
+  type_ = of_types member.type_ ; 
+  ident = member.ident ; 
+  default = member.default ;
+}
+
+let of_dictionary ident inheritance members = {
+  ident = ident ;
+  inheritance = inheritance ;
+  dictionary_members =  of_ext_list of_dictionary_member members ;
+}
+
+let of_partial : Ast.Definition.partial -> Data.partial = function
+  | `Interface {ident; members} -> `Interface(of_interface ident None members)
+  | `Dictionary {ident; members} -> `Dictionary(of_dictionary ident None members)
+  | `Namespace {ident; members} -> `Namespace(of_namespace ident members) 
+
+let of_definition : Ast.Definition.definition -> Data.definition = function
+  | `Callback(string, return_type, arguments) -> 
+    `Callback(string, of_return_type return_type, of_ext_list of_argument arguments)
+  | `Callback_interface {ident; inheritance; members} ->
+    `Callback_interface(of_interface ident inheritance members)
+  | `Interface {ident; inheritance; members} -> 
+    `Interface(of_interface ident inheritance members)
+  | `Namespace {ident; members} -> `Namespace(of_namespace ident members)
+  | `Partial partial -> `Partial(of_partial partial)
+  | `Dictionary {ident; inheritance; members} ->
+    `Dictionary(of_dictionary ident inheritance members)
+  | `Enum(string, values) -> `Enum(string, values) 
+  | `Typedef(types, string) -> `Typedef(of_types types, string)
+  | `Implements(ident, implement) -> `Implements(ident, implement)
+
+let of_difinitions (definitions : Ast.Definition.definitions) : Data.definitions =
+  of_ext_list of_definition definitions

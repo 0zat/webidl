@@ -1,4 +1,4 @@
-true: package(ppx_deriving.show), use_menhir, linkall
+true: package(ppx_deriving.show), use_menhir, linkall, bin_annot
 <src/ast/{types,const,argument,extended,operation,attribute,interface,dictionary,namespace,definition}.cmx>: for-pack(Ast),for-pack(Webidl.Ast)
 <src/syntax/{lexer,parser}.cmx>: for-pack(Syntax),for-pack(Webidl.Syntax)
 <src/{syntax/syntax,ast/ast,lib/parse,lib/data,lib/ast_to_data}.cmx>: for-pack(Webidl)

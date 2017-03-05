@@ -9,6 +9,6 @@ type attribute_name = [
 type attribute = types * attribute_name [@@deriving show]
 
 type read_only_attribute = {
-  is_read_only : bool ;
+  is_readonly : bool ;
   attribute : attribute ;
 } [@@deriving show]
