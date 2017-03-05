@@ -1,0 +1,44 @@
+[Exposed=Window]
+callback interface check_ext {
+  [Replaceable] const short test1 = 1;
+  [Constructor(double x, double y)] const short test2 = 1;
+  [NamedConstructor=Image(DOMString src)] unsigned short test3(Node node);
+  [PutForwards=name] stringifier;
+  [Exposed=(Window,Worker)] getter double ();
+};
+
+enum MealType { "rice", "noodles", "other" };
+
+interface check_stringifier {
+  stringifier attribute DOMString ident1;
+  stringifier DOMString ident2();
+  stringifier DOMString ();
+  stringifier;
+};
+
+interface check_serializer {
+  serializer;
+  serializer = test;
+  serializer = { inherit, a, b, c };
+  serializer = { d, e, f };
+  serializer = { getter };
+  serializer = [ getter ];
+  serializer = [ g, h, i ];
+};
+
+interface check_attribute {
+  readonly attribute DOMString name1;
+  static readonly attribute DOMString name2;
+  static attribute DOMString name3;
+  inherit attribute DOMString name4;
+  attribute Test name5;
+};
+
+interface check_operation : Animal {
+  boolean isMouseOver();
+  getter any test();
+  object f(optional DOMString c = "value");
+  void g(Event a, DOMString? b, optional DOMString c, double... d);
+  static void h([PutForwards=name] Event a);
+  setter float (a);
+};

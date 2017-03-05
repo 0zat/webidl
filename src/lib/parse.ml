@@ -12,7 +12,7 @@ type syntax_error = {
   src_type : src_type ;
   start_pos : int * int ;
   end_pos : int * int ;
-  string : string ;
+  token : string ;
 } [@@deriving show]
 
 exception Syntax_error of syntax_error
@@ -21,10 +21,10 @@ let get_error_info src src_type lexbuf =
   let open Lexing in
   let start = Lexing.lexeme_start_p lexbuf in
   let end_ = Lexing.lexeme_end_p lexbuf in
-  let string = String.sub lexbuf.lex_buffer start.pos_cnum (end_.pos_cnum - start.pos_cnum) in
+  let token = Lexing.lexeme lexbuf in
   let start_pos = (start.pos_lnum, (start.pos_cnum - start.pos_bol + 1)) in
   let end_pos = (end_.pos_lnum, (end_.pos_cnum - end_.pos_bol + 1)) in
-  {src; src_type; start_pos; end_pos; string}
+  {src; src_type; start_pos; end_pos; token}
 
 let main ?(trace = false) src src_type lexbuf =
   let _ = Parsing.set_trace trace in
