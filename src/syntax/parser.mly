@@ -11,6 +11,7 @@
     *)
 
     open Ast
+    open Keyword
 %}
 
 %token LBRACE RBRACE LBRACKET RBRACKET LPAR RPAR LT GT
@@ -63,29 +64,29 @@ callbackOrInterface :
     | interface   { `Interface $1 }
 
 argumentNameKeyword :
-    | ATTRIBUTE { `Attribute }
-    | CALLBACK { `Callback }
-    | CONST { `Const }
-    | DELETER { `Deleter }
-    | DICTIONARY { `Dictionary }
-    | ENUM { `Enum }
-    | GETTER { `Getter }
-    | IMPLEMENTS { `Implements }
-    | INHERIT { `Inherit }
-    | INTERFACE { `Interface }
-    | ITERABLE { `Iterable }
-    | LEGACYCALLER { `Legacycaller }
-    | MAPLIKE { `Maplike }
-    | NAMESPACE { `Namespace }
-    | PARTIAL { `Partial }
-    | REQUIRED { `Required }
-    | SERIALIZER { `Serializer }
-    | SETLIKE { `Setlike }
-    | SETTER { `Setter }
-    | STATIC { `Static }
-    | STRINGIFIER { `Stringifier }
-    | TYPEDEF { `Typedef }
-    | UNRESTRICTED { `Unrestricted }
+    | ATTRIBUTE { attribute }
+    | CALLBACK { callback }
+    | CONST { const }
+    | DELETER { deleter }
+    | DICTIONARY { dictionary }
+    | ENUM { enum }
+    | GETTER { getter }
+    | IMPLEMENTS { implements }
+    | INHERIT { inherit_ }
+    | INTERFACE { interface }
+    | ITERABLE { iterable }
+    | LEGACYCALLER { legacycaller }
+    | MAPLIKE { maplike }
+    | NAMESPACE { namespace }
+    | PARTIAL { partial }
+    | REQUIRED { required }
+    | SERIALIZER { serializer }
+    | SETLIKE { setlike }
+    | SETTER { setter }
+    | STATIC { static }
+    | STRINGIFIER { stringifier }
+    | TYPEDEF { typedef }
+    | UNRESTRICTED { unrestricted }
 
 callbackRestOrInterface :
     | callbackRest   { `Callback $1 }
@@ -167,10 +168,10 @@ attributeRest :
 
 attributeName :
     | attributeNameKeyword { $1 }
-    | IDENTIFIER { `Ident $1 }
+    | IDENTIFIER { $1 }
 
 attributeNameKeyword :
-    | REQUIRED { `Required }
+    | REQUIRED { required }
 
 readOnly :
     | READONLY { true }
@@ -222,8 +223,8 @@ optionalOrRequiredArgument :
     | types ellipsis argumentName { `Required {type_ = $1; is_variadic = $2; name = $3} }
 
 argumentName :
-    | argumentNameKeyword { ($1 :> argument_name) }
-    | IDENTIFIER { `Ident $1 }
+    | argumentNameKeyword { $1 }
+    | IDENTIFIER { $1 }
 
 ellipsis :
     | ELLIPSIS { true }

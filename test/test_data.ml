@@ -14,7 +14,7 @@ let check_stringifier = {
                                   is_readonly = false;
                                   is_inherit = false;
                                   type_ = `Domstring;
-                                  name = `Ident ("ident1") })));
+                                  name = "ident1"})));
      ([],
       `Stringifier (`Operation ({ Data.specials = [];
                                   is_static = false;
@@ -47,21 +47,21 @@ let check_attribute = {
   interface_members =
     [([], `Attribute ({ Data.is_static = false; is_readonly = true;
                         is_inherit = false; type_ = `Domstring;
-                        name = `Ident ("name1") }));
+                        name = "name1"}));
      ([], `Attribute ({ Data.is_static = true; is_readonly = true;
                         is_inherit = false; type_ = `Domstring;
-                        name = `Ident ("name2") }));
+                        name = "name2"}));
      ([], `Attribute ({ Data.is_static = true; is_readonly = false;
                         is_inherit = false; type_ = `Domstring;
-                        name = `Ident ("name3") }));
+                        name = "name3"}));
      ([], `Attribute ({ Data.is_static = false;
                         is_readonly = false; is_inherit = true;
-                        type_ = `Domstring; name = `Ident ("name4")
+                        type_ = `Domstring; name = "name4"
                       }));
      ([], `Attribute ({ Data.is_static = false;
                         is_readonly = false; is_inherit = false;
                         type_ = `Ident ("Test");
-                        name = `Ident ("name5") }))
+                        name = "required"}))
     ]
 }
 
@@ -84,7 +84,7 @@ let check_operation = {
                     arguments =
                       [([],
                         { Data.type_ = `Domstring;
-                          name = `Ident ("c");
+                          name = "c";
                           necessity =
                             `Optional ((Some (`String ("value")))) })
                       ]
@@ -95,19 +95,19 @@ let check_operation = {
                     arguments =
                       [([],
                         { Data.type_ = `Ident ("Event");
-                          name = `Ident ("a");
+                          name = "a";
                           necessity = `Required (`Fixed) });
                        ([],
                         { Data.type_ = `Nullable (`Domstring);
-                          name = `Ident ("b");
+                          name = "b";
                           necessity = `Required (`Fixed) });
                        ([],
                         { Data.type_ = `Domstring;
-                          name = `Ident ("c");
+                          name = "c";
                           necessity = `Optional (None) });
                        ([],
                         { Data.type_ = `Double;
-                          name = `Ident ("d");
+                          name = "d";
                           necessity = `Required (`Variadic) })
                       ]
                   }));
@@ -117,7 +117,7 @@ let check_operation = {
                     arguments =
                       [([`Ident_list (("PutForwards", ["name"]))],
                         { Data.type_ = `Ident ("Event");
-                          name = `Ident ("a");
+                          name = "maplike";
                           necessity = `Required (`Fixed) })
                       ]
                   }));
@@ -153,7 +153,7 @@ let check_namespace = {
       `Attribute ({ Data.is_static = false; is_readonly = true;
                     is_inherit = false;
                     type_ = `Ident ("Vector");
-                    name = `Ident ("unit") }));
+                    name = "unit"}));
      ([],
       `Operation ({ Data.specials = []; is_static = false;
                     type_ = `Double;
@@ -161,11 +161,11 @@ let check_namespace = {
                     arguments =
                       [([],
                         { Data.type_ = `Ident ("Vector");
-                          name = `Ident ("x");
+                          name = "x";
                           necessity = `Required (`Fixed) });
                        ([],
                         { Data.type_ = `Ident ("Vector");
-                          name = `Ident ("y");
+                          name = "y";
                           necessity = `Required (`Fixed) })
                       ]
                   }));
@@ -176,11 +176,11 @@ let check_namespace = {
                     arguments =
                       [([],
                         { Data.type_ = `Ident ("Vector");
-                          name = `Ident ("x");
+                          name = "x";
                           necessity = `Required (`Fixed) });
                        ([],
                         { Data.type_ = `Ident ("Vector");
-                          name = `Ident ("y");
+                          name = "y";
                           necessity = `Required (`Fixed) })
                       ]
                   }))
@@ -208,12 +208,12 @@ let check_ext = {
      ([`Argument_list (("Constructor",
                         [([],
                           { Data.type_ = `Double;
-                            name = `Ident ("x");
+                            name = "x";
                             necessity =
                               `Required (`Fixed) });
                          ([],
                           { Data.type_ = `Double;
-                            name = `Ident ("y");
+                            name = "y";
                             necessity =
                               `Required (`Fixed) })
                         ]))
@@ -222,7 +222,7 @@ let check_ext = {
      ([`Named_arg_list (("NamedConstructor", "Image",
                          [([],
                            { Data.type_ = `Domstring;
-                             name = `Ident ("src");
+                             name = "src";
                              necessity =
                                `Required (`Fixed) })
                          ]))
@@ -234,7 +234,7 @@ let check_ext = {
                     arguments =
                       [([],
                         { Data.type_ = `Ident ("Node");
-                          name = `Ident ("node");
+                          name = "node";
                           necessity = `Required (`Fixed)
                         })
                       ]
@@ -253,7 +253,7 @@ let check_ext = {
 let check_callback = (
   "check_callback", `Void,
   [([],
-    { Data.type_ = `Domstring; name = `Ident ("a");
+    { Data.type_ = `Domstring; name = "a";
       necessity = `Required (`Fixed) })
   ])
 

@@ -20,15 +20,15 @@ type ('types, 'return_type) nullable_aux = [
 ] [@@deriving show]
 
 (* inside nullable *)
-type ('types, 'return_type) null_aux = [
+type ('types, 'return_type) not_null_aux = [
   | ('types, 'return_type) nullable_aux 
   | `Union of ('types, 'return_type) non_any_aux list
-]
+] [@@deriving show]
 
 and ('types, 'return_type) non_any_aux = [
   | `Promise of 'return_type
   | ('types, 'return_type) nullable_aux
-  | `Nullable of ('types, 'return_type) null_aux
+  | `Nullable of ('types, 'return_type) not_null_aux
   | `Union of ('types, 'return_type) non_any_aux list
 ] [@@deriving show]
 
@@ -46,7 +46,7 @@ type types = (types, return_type) types_aux [@@deriving show]
 and return_type = (types, return_type) return_type_aux [@@deriving show]
 
 type non_any = (types, return_type) non_any_aux [@@deriving show]
-type null = (types, return_type) null_aux [@@deriving show]
+type not_null = (types, return_type) not_null_aux [@@deriving show]
 
 type const_value = Ast.const_value [@@deriving show]
 
@@ -63,11 +63,9 @@ type necessity = [
   | `Required of [`Variadic | `Fixed]
 ] [@@deriving show]
 
-type argument_name = Ast.argument_name [@@deriving show]
-
 type argument = {
   type_ : types ;
-  name : argument_name ;
+  name : string ;
   necessity : necessity
 } [@@deriving show]
 
@@ -84,7 +82,7 @@ type attribute = {
   is_readonly : bool ;
   is_inherit : bool ;
   type_ : types ;
-  name : [ `Ident of string | `Required ] ;
+  name : string ;
 } [@@deriving show]
 
 type special = Ast.special [@@deriving show]

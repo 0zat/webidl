@@ -2,7 +2,7 @@ open Ast
 
 open Data
 
-let of_null cond (dst : Data.null) = 
+let of_null cond (dst : Data.not_null) = 
   match cond, dst with
   | false, _ -> (dst :> Data.non_any)
   | true, dst -> `Nullable dst
@@ -12,15 +12,15 @@ let rec of_non_any : Ast.non_any -> Data.non_any = function
   | `Sequence {type_; has_null} -> 
     let types = of_types type_ in
     of_null has_null (`Sequence types) 
-  | `Primitive {type_; has_null} -> of_null has_null (type_ :> Data.null)
-  | `String {type_; has_null} -> of_null has_null (type_ :> Data.null)
+  | `Primitive {type_; has_null} -> of_null has_null (type_ :> Data.not_null)
+  | `String {type_; has_null} -> of_null has_null (type_ :> Data.not_null)
   | `Ident {type_; has_null} -> 
     let ident = `Ident type_ in
     of_null has_null ident
   | `Object {type_; has_null} -> of_null has_null `Object 
   | `Error {type_; has_null} -> of_null has_null `Error   
   | `Domexception {type_; has_null} -> of_null has_null `Domexception 
-  | `Buffer {type_; has_null} -> of_null has_null (type_ :> Data.null)
+  | `Buffer {type_; has_null} -> of_null has_null (type_ :> Data.not_null)
   | `Frozen_array {type_; has_null} -> 
     let types = of_types type_ in
     of_null has_null (`Frozen_array types)
