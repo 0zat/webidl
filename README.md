@@ -1,11 +1,5 @@
 # Webidl
- a parser of [Webidl](https://heycam.github.io/webidl) 
-
-## requirements(tested version)
-OCaml (4.03.0)  
-ppx_deriving (4.1)  
-OCamlbuild (0.9.3)    
-opam (1.2.2)  
+ a parser of [Web IDL](https://heycam.github.io/webidl) 
 
 ## Installation
 opam install webidl
@@ -43,5 +37,7 @@ print infomation of parse error
 ## recent changes
 * version 1.2
     * support for Web IDL Editor’s Draft, 1 June 2017
+        * data types changed
     * refactoring
+        * remove Ast files
     * remove menhir dependence
