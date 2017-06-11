@@ -118,7 +118,7 @@ rule read = parse
       | Not_found -> IDENTIFIER id
     }
   | eof { EOF }
-  | _  { raise Parser.Error }
+  | _  { raise Parsing.Parse_error }
 
 and read_string buf = parse
   | '\n' { new_line lexbuf; Buffer.add_char buf '\n'; read_string buf lexbuf }

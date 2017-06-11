@@ -1,1 +1,1 @@
-true: package(webidl)
+true: package(ppx_deriving.show), package(webidl)

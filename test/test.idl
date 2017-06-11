@@ -1,7 +1,7 @@
 [Exposed=Window,
 Exposed=(Window,Worker)]
 interface check_stringifier {
-  stringifier attribute DOMString ident1;
+  stringifier attribute [TreatNullAs=EmptyString] DOMString ident1;
   stringifier DOMString ident2();
   stringifier DOMString ();
   stringifier;
@@ -68,3 +68,4 @@ callback interface check_ext {
 
 typedef sequence<Sq> Seq;
 Implements_test1 implements Implements_test2 ;
+typedef ((a or b)? or c)? union;

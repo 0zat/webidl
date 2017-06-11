@@ -1,35 +1,3 @@
-open Test_data
-
-let test = function
-  | [
-    (int_ext, `Interface stringifier);
-    ([], `Interface serializer);
-    ([], `Interface attribute);
-    ([], `Interface operation);
-    ([], `Partial (`Interface  others));
-    ([], `Namespace namespace);
-    ([], `Dictionary dictionary);
-    ([], `Enum enum);
-    ([], `Callback callback);
-    ([], `Callback_interface ext);
-    ([], `Typedef typedef);
-    ([], `Implements implements)
-  ]
-    ->
-    assert(int_ext = check_int_ext);
-    assert(stringifier = check_stringifier);
-    assert(serializer = check_serializer);
-    assert(attribute = check_attribute);
-    assert(operation = check_operation);
-    assert(others = check_others);
-    assert(namespace = check_namespace);
-    assert(dictionary = check_dictionary);
-    assert(enum = check_enum);
-    assert(callback = check_callback);
-    assert(ext = check_ext);
-    assert(typedef = check_typedef);
-    assert(implements = check_implements)
-  | _ -> failwith "unexpected idl structure"
 
 let test_lexerror () =
   try
@@ -51,10 +19,15 @@ let test_parseerror () =
             end_pos = (6, 27); token = "DOMString" }
     )
 
+
 let () =
-  Webidl.Parse.data_from_file "test.idl" |> test;
-  test_lexerror ();
-  test_parseerror ();
-  print_string "test finish\n"
-
-
+  try
+    Webidl.Parse.data_from_file Sys.argv.(1) (* 1. *)
+    |> Webidl.Parse.show_data (* 2. *)
+    |> print_string
+  with
+  | Webidl.Parse.Syntax_error e -> (* 3. *)
+    print_string "[!]Syntax Error\nInfo:\n";
+    Webidl.Parse.show_syntax_error e (* 4. *)
+    |> print_string
+    |> print_newline

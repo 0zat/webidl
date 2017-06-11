@@ -1,3 +1,4 @@
+// (7, 27); token = "DOMString" shold be error
 [Exposed=Window]
 callback interface NodeFilter {
   // Constants for acceptNode()

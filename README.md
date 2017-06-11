@@ -4,8 +4,7 @@
 ## requirements(tested version)
 OCaml (4.03.0)  
 ppx_deriving (4.1)  
-OCamlbuild (0.9.3)  
-menhir (20170101)  
+OCamlbuild (0.9.3)    
 opam (1.2.2)  
 
 ## Installation
@@ -40,3 +39,9 @@ if there is an syntax error, `exception Syntax_error` is raised.
 
 4. `Webidl.Parse.show_syntax_error`  
 print infomation of parse error
+
+## recent changes
+* version 1.2
+    * support for Web IDL Editor’s Draft, 1 June 2017
+    * refactoring
+    * remove menhir dependence

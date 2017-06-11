@@ -1,4 +1,3 @@
-type ast = Ast.definitions [@@deriving show]
 type data = Data.definitions [@@deriving show]
 
 type src_type = 
@@ -31,7 +30,7 @@ let main ?(trace = false) src src_type lexbuf =
   try
     Syntax.Parser.main Syntax.Lexer.read lexbuf 
   with
-  | Syntax.Parser.Error ->
+  | Parsing.Parse_error ->
     let syntax_error = get_error_info src src_type lexbuf in
     raise (Syntax_error syntax_error)
 
@@ -48,14 +47,14 @@ let ast_from_file file_name =
   let lexbuf = Lexing.from_channel input_channel in
   main file_name File lexbuf
 
-let data_from_string src_name input_string : data =
+let data_from_string src_name input_string =
   ast_from_string src_name input_string
   |> Ast_to_data.of_difinitions
 
-let data_from_channel src_name input_channel : data =
+let data_from_channel src_name input_channel =
   ast_from_channel src_name input_channel
   |> Ast_to_data.of_difinitions
 
-let data_from_file file_name : data =
+let data_from_file file_name =
   ast_from_file file_name 
   |> Ast_to_data.of_difinitions
