@@ -1,6 +1,6 @@
 {
     open Lexing
-    open Parser
+    open Tokens
     open Keyword
 
     let token_table = Hashtbl.create 63
@@ -102,12 +102,14 @@ rule read = parse
   | "<" { LT }
   | ">" { GT }
   | "-Infinity" { MINUSINFINITY }
+  | "-" { MINUS }
   | "?" { QUESTION }
   | "=" { EQUAL }
   | "," { COMMA }
   | ":" { COLON }
   | ";" { SEMICOLON }
   | "..." { ELLIPSIS }
+  | "." { DOT }
   | '"' { read_string (Buffer.create 10) lexbuf }
   | int { INTVAL (int_of_string (Lexing.lexeme lexbuf)) }
   | float { FLOATVAL (float_of_string (Lexing.lexeme lexbuf)) } 

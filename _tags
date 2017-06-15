@@ -1,4 +1,6 @@
-true: package(ppx_deriving.show),  linkall, bin_annot
+<src/syntax/tokens.mlypack>: only_tokens
+<src/syntax/parser.mlypack>: external_tokens(Tokens)
+true: package(ppx_deriving.show), use_menhir, linkall, bin_annot
 <src/syntax/{lexer,parser,keyword,ast}.cmx>: for-pack(Syntax),for-pack(Webidl.Syntax)
 <src/{syntax/syntax,lib/parse,lib/data,lib/ast_to_data}.cmx>: for-pack(Webidl)
 "src/syntax": include

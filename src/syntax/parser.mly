@@ -10,30 +10,11 @@
       if is_null then `Nullable (value :> nullable_non_any) else (value :> non_any)
 %}
 
-%token LBRACE RBRACE LBRACKET RBRACKET LPAR RPAR LT GT
-%token UNSIGNED BYTE OCTET SHORT LONG
-%token DOMSTRING USVSTRING BYTESTRING 
-%token UNRESTRICTED FLOAT DOUBLE
-%token ANY VOID BOOLEAN OBJECT OR 
-%token TRUE FALSE NULL INFINITY MINUSINFINITY NAN
-%token GETTER SETTER DELETER LEGACYCALLER
-%token SERIALIZER STRINGIFIER  
-%token QUESTION EQUAL COMMA COLON SEMICOLON ELLIPSIS
-%token MAPLIKE SETLIKE ITERABLE
-%token PROMISE RECORD SEQUENCE 
-%token NAMESPACE CALLBACK PARTIAL INTERFACE DICTIONARY ENUM
-%token IMPLEMENTS INHERIT ATTRIBUTE TYPEDEF  CONST
-%token READONLY REQUIRED STATIC OPTIONAL   
-%token DOMEXCEPTION ERROR_       
-%token INT8ARRAY INT16ARRAY INT32ARRAY 
-%token UINT8ARRAY UINT16ARRAY UINT32ARRAY UINT8CLAMPEDARRAY 
-%token FLOAT32ARRAY FLOAT64ARRAY 
-%token ARRAYBUFFER DATAVIEW FROZENARRAY
+%parameter<Parse_extended : sig
+  val main: int -> int -> string
+end>
 
-%token<int> INTVAL
-%token<float> FLOATVAL
-%token<string> IDENTIFIER STRING
-%token EOF
+
 
 %start main
 %type < Ast.definitions > main
@@ -42,7 +23,7 @@
 %%
 
 main :
-    | definitions EOF { $1 }
+    | definitions EOF {  $1 }
 
 definitions :
     | extendedAttributeList definition definitions { ($1, $2) :: $3 }
@@ -448,35 +429,75 @@ bufferRelatedType :
     | FLOAT64ARRAY { `Float64Array }
 
 extendedAttributeList :
-    | LBRACKET extendedAttribute extendedAttributes RBRACKET { $2 :: $3 }
-    |  { [] }
+    | LBRACKET extendedAttribute extendedAttributes RBRACKET { Some(Parse_extended.main $startofs($1) $endofs) }
+    |  { None }
 
 extendedAttributes :
-    | COMMA extendedAttribute extendedAttributes { $2 :: $3 }
-    |  { [] }
+    | COMMA extendedAttribute extendedAttributes { () }
+    |  { () }
 
 extendedAttribute :
-    | extendedAttributeNoArgs { $1 }
-    | extendedAttributeArgList { $1 }
-    | extendedAttributeIdent { $1 }
-    | extendedAttributeIdentList { $1 }
-    | extendedAttributeNamedArgList { $1 }
+    | LPAR extendedAttributeInner RPAR extendedAttributeRest { () }
+    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeRest { () }
+    | LBRACE extendedAttributeInner RBRACE extendedAttributeRest { () }
+    | other extendedAttributeRest { () }
 
-identifierList :
-    | IDENTIFIER identifiers { $1 :: $2 }
+extendedAttributeRest :
+    | extendedAttribute { () }
+    | { () }
+    
+extendedAttributeInner :
+    | LPAR extendedAttributeInner RPAR extendedAttributeInner { () }
+    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeInner { () }
+    | LBRACE extendedAttributeInner RBRACE extendedAttributeInner { () }
+    | otherOrComma extendedAttributeInner { () }
+    |  { () }
 
-extendedAttributeNoArgs :
-    | IDENTIFIER { `NoArgs $1 }
+other :
+    | INTVAL { () }
+    | FLOATVAL { () }
+    | IDENTIFIER { () }
+    | STRING { () }
+    | OTHER { () }
+    | MINUS { () }
+    | MINUSINFINITY { () }
+    | DOT { () }
+    | ELLIPSIS { () }
+    | COLON { () }
+    | SEMICOLON { () }
+    | LT { () }
+    | EQUAL { () }
+    | GT { () }
+    | QUESTION { () }
+    | BYTESTRING { () }
+    | DOMSTRING { () }
+    | FROZENARRAY { () }
+    | INFINITY { () }
+    | NAN { () }
+    | USVSTRING { () }
+    | ANY { () }
+    | BOOLEAN { () }
+    | BYTE { () }
+    | DOUBLE { () }
+    | FALSE { () }
+    | FLOAT { () }
+    | LONG { () }
+    | NULL { () }
+    | OBJECT { () }
+    | OCTET { () }
+    | OR { () }
+    | OPTIONAL { () }
+    | SEQUENCE { () }
+    | SHORT { () }
+    | TRUE { () }
+    | UNSIGNED { () }
+    | VOID { () }
+    | argumentNameKeyword { () }
+    | bufferRelatedType { () }
 
-extendedAttributeArgList :
-    | IDENTIFIER LPAR argumentList RPAR { `ArgumentList($1, $3) }
+otherOrComma :
+    | other { () }
+    | COMMA { () }
 
-extendedAttributeIdent :
-    | IDENTIFIER EQUAL IDENTIFIER { `Ident($1, $3) }
 
-extendedAttributeIdentList :
-    | IDENTIFIER EQUAL LPAR identifierList RPAR { `IdentList($1, $4) }
 
-extendedAttributeNamedArgList :
-    | IDENTIFIER EQUAL IDENTIFIER LPAR argumentList RPAR 
-    { `NamedArgList($1, $3, $5) }

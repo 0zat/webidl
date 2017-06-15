@@ -31,144 +31,90 @@ type buffer = [
   | `Float64Array 
 ] [@@deriving show]
 
-type nullable_non_any = [
+type extends = string option [@@deriving show]
+
+type 'type_with_ext nullable_non_any_aux = [
   | primitive
   | string_type
   | `Ident of string
-  | `Sequence of type_with_ext
+  | `Sequence of 'type_with_ext
   | `Object
   | `Error
   | `DomException
   | buffer
-  | `FrozenArray of type_with_ext
-  | `Record of string_type * type_with_ext
+  | `FrozenArray of 'type_with_ext
+  | `Record of string_type * 'type_with_ext
 ] [@@deriving show]
 
-and nullable_union = [
-    | primitive
-    | string_type
-    | `Ident of string
-    | `Sequence of type_with_ext
-    | `Object
-    | `Error
-    | `DomException
-    | buffer
-    | `FrozenArray of type_with_ext
-    | `Record of string_type * type_with_ext
-    | `Union of union_type
-  ] [@@deriving show]
+type ('type_with_ext, 'union_type) nullable_union_aux = [
+  | 'type_with_ext nullable_non_any_aux
+  | `Union of 'union_type
+] [@@deriving show]
 
-and non_any = [
-    | `Promise of return_type
-    | `Nullable of nullable_non_any
-    | primitive
-    | string_type
-    | `Ident of string
-    | `Sequence of type_with_ext
-    | `Object
-    | `Error
-    | `DomException
-    | buffer
-    | `FrozenArray of type_with_ext
-    | `Record of string_type * type_with_ext
-  ] [@@deriving show]
+type ('type_with_ext, 'return_type) non_any_aux = [
+  | `Promise of 'return_type
+  | `Nullable of 'type_with_ext nullable_non_any_aux
+  | 'type_with_ext nullable_non_any_aux
+] [@@deriving show]
 
-and single_type =  [
-    | `Promise of return_type
-    | `Nullable of nullable_non_any
-    | primitive
-    | string_type
-    | `Ident of string
-    | `Sequence of type_with_ext
-    | `Object
-    | `Error
-    | `DomException
-    | buffer
-    | `FrozenArray of type_with_ext
-    | `Record of string_type * type_with_ext
-    | `Any
-  ] [@@deriving show]
+type ('type_with_ext, 'return_type) single_type_aux =  [
+  | ('type_with_ext, 'return_type) non_any_aux
+  | `Any
+] [@@deriving show]
 
-and type_with_ext = extends * type_ [@@deriving show]
+type ('type_with_ext, 'return_type, 'union_type) union_member_aux = [
+  | `NonAny of extends * ('type_with_ext, 'return_type) non_any_aux
+  | `Union of 'union_type
+  | `Nullable of [`Union of 'union_type]
+] [@@deriving show]
 
-and union_member = [
-    | `NonAny of extends * non_any
-    | `Union of union_type
-    | `Nullable of [`Union of union_type]
-  ] [@@deriving show]
+type ('type_with_ext, 'return_type, 'union_type) union_type_aux = 
+  ('type_with_ext, 'return_type, 'union_type) union_member_aux list 
+[@@deriving show]
 
-and union_type =  union_member list [@@deriving show]
+type ('type_with_ext, 'return_type, 'union_type) type_aux = [
+  | `Promise of 'return_type
+  | 'type_with_ext nullable_non_any_aux
+  | `Any
+  | `Nullable of ('type_with_ext, 'union_type) nullable_union_aux
+  | `Union of 'union_type
+] [@@deriving show]
 
-and type_ = [
-    | `Promise of return_type
-    | `Nullable of nullable_union
-    | primitive
-    | string_type
-    | `Ident of string
-    | `Sequence of type_with_ext
-    | `Object
-    | `Error
-    | `DomException
-    | buffer
-    | `FrozenArray of type_with_ext
-    | `Record of string_type * type_with_ext
-    | `Any
-    | `Union of union_type
-  ] [@@deriving show]
+type ('type_with_ext, 'return_type, 'union_type) return_type_aux = [
+  | ('type_with_ext, 'return_type, 'union_type) type_aux 
+  | `Void
+] [@@deriving show]
 
-and return_type = [
-    | `Promise of return_type
-    | `Nullable of nullable_union
-    | primitive
-    | string_type
-    | `Ident of string
-    | `Sequence of type_with_ext
-    | `Object
-    | `Error
-    | `DomException
-    | buffer
-    | `FrozenArray of type_with_ext
-    | `Record of string_type * type_with_ext
-    | `Any
-    | `Union of union_type
-    | `Void
-  ] [@@deriving show]
+type type_with_ext = extends * type_ [@@deriving show]
+and type_ = (type_with_ext, return_type, union_type) type_aux [@@deriving show]
+and return_type = (type_with_ext, return_type, union_type) return_type_aux [@@deriving show]
+and union_type = (type_with_ext, return_type, union_type) union_type_aux [@@deriving show]
+and nullable_non_any = type_with_ext nullable_non_any_aux [@@deriving show]
+and non_any = (type_with_ext, return_type) non_any_aux [@@deriving show]
 
-and const_value = [
-    | `Bool of bool
-    | `Float of float
-    | `Int of int
-    | `Null
-  ] [@@deriving show]
+type const_value = [
+  | `Bool of bool
+  | `Float of float
+  | `Int of int
+  | `Null
+] [@@deriving show]
 
-and const = [
-    | primitive
-    | `Ident of string
-  ]  [@@deriving show]
+type const = [
+  | primitive
+  | `Ident of string
+]  [@@deriving show]
 
-and default_value = [
-    | `Const of const_value
-    | `String of string
-    | `EmptySequence
-  ] [@@deriving show]
+type default_value = [
+  | `Const of const_value
+  | `String of string
+  | `EmptySequence
+] [@@deriving show]
 
-and argument = [
-    | `Optional of type_with_ext * string * default_value option 
-    | `Variadic of type_ * string 
-    | `Fixed of type_ * string 
-  ] [@@deriving show]
-
-and extended_argument = extended_attribute list * argument [@@deriving show]
-
-and extended_attribute = [
-    | `NoArgs of string
-    | `ArgumentList of string * (extended_argument list)
-    | `NamedArgList of string * string * (extended_argument list)
-    | `Ident of string * string
-    | `IdentList of string * (string list)
-  ] [@@deriving show]
-
-and extends = extended_attribute list [@@deriving show]
+type argument = [
+  | `Optional of type_with_ext * string * default_value option 
+  | `Variadic of type_ * string 
+  | `Fixed of type_ * string 
+] [@@deriving show]
 
 type special = [
   | `Getter 
