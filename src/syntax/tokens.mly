@@ -20,7 +20,8 @@
 
 %token<int> INTVAL
 %token<float> FLOATVAL
-%token<string> IDENTIFIER STRING OTHER
+%token<string> IDENTIFIER STRING
+%token<char> OTHER
 %token EOF
 
 %%

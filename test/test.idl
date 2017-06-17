@@ -72,6 +72,6 @@ Implements_test1 implements Implements_test2 ;
 
 typedef ((a or b)? or c)? union;
 
-[Pref="my.pref.name"] interface custom_ext {
+[Pref!="my.pref.name"] interface custom_ext {
 
 };

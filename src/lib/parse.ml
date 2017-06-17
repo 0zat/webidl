@@ -27,23 +27,35 @@ let get_error_info src src_type lexbuf =
 
 let main ?(trace = false) src src_type lexbuf get_substr =
   let _ = Parsing.set_trace trace in
-  let module Parser = Syntax.Parser.Make(struct let main sp ep = get_substr sp ep end) in
+  let module Param = struct 
+    let main sp ep =
+      let ext = get_substr sp ep in
+      let lexbuf = Lexing.from_string ext in
+      try 
+        Syntax.Parser_extend.ext_main Syntax.Lexer.read lexbuf
+      with
+      | Syntax.Parser_extend.Error
+      | Parsing.Parse_error -> `Custom ext
+  end 
+  in
+  let module Parser = Syntax.Parser.Make(Param) in
   try
     Parser.main Syntax.Lexer.read lexbuf 
   with
+  | Parser.Error
   | Parsing.Parse_error ->
     let syntax_error = get_error_info src src_type lexbuf in
     raise (Syntax_error syntax_error)
 
 let ast_from_string src_name input_string =
+  let get_substr sp ep = String.sub input_string sp (ep - sp) in
   let lexbuf = Lexing.from_string input_string in
-  main src_name String lexbuf (String.sub input_string)
+  main src_name String lexbuf get_substr
 
 let ast_from_channel src_name input_channel =
-  let get_substr sp ep =
-    really_input_string input_channel (ep - sp)
-  in
-  let lexbuf = Lexing.from_channel input_channel in
+  let input_string = really_input_string input_channel (in_channel_length input_channel) in
+  let get_substr sp ep = String.sub input_string sp (ep - sp) in
+  let lexbuf = Lexing.from_string input_string in
   main src_name Channel lexbuf get_substr
 
 let ast_from_file file_name =

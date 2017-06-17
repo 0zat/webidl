@@ -62,7 +62,7 @@ let of_dictionary_member = function
   | `Required(type_with_ext, ident, default) -> 
     {is_required = true; type_with_ext ; ident ; default}
   | `NotRequired(type_, ident, default) -> 
-    let type_with_ext = (None, type_) in
+    let type_with_ext = (`None, type_) in
     {is_required = false; type_with_ext ; ident ; default}
 
 let of_dictionary (ident, inheritance, members) = 

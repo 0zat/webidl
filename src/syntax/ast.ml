@@ -1,3 +1,5 @@
+
+
 type primitive = [
   | `Boolean 
   | `Byte 
@@ -31,8 +33,6 @@ type buffer = [
   | `Float64Array 
 ] [@@deriving show]
 
-type extends = string option [@@deriving show]
-
 type 'type_with_ext nullable_non_any_aux = [
   | primitive
   | string_type
@@ -62,14 +62,14 @@ type ('type_with_ext, 'return_type) single_type_aux =  [
   | `Any
 ] [@@deriving show]
 
-type ('type_with_ext, 'return_type, 'union_type) union_member_aux = [
-  | `NonAny of extends * ('type_with_ext, 'return_type) non_any_aux
+type ('type_with_ext, 'return_type, 'union_type, 'extends) union_member_aux = [
+  | `NonAny of 'extends * ('type_with_ext, 'return_type) non_any_aux
   | `Union of 'union_type
   | `Nullable of [`Union of 'union_type]
 ] [@@deriving show]
 
-type ('type_with_ext, 'return_type, 'union_type) union_type_aux = 
-  ('type_with_ext, 'return_type, 'union_type) union_member_aux list 
+type ('type_with_ext, 'return_type, 'union_type, 'extends) union_type_aux = 
+  ('type_with_ext, 'return_type, 'union_type, 'extends) union_member_aux list 
 [@@deriving show]
 
 type ('type_with_ext, 'return_type, 'union_type) type_aux = [
@@ -88,33 +88,49 @@ type ('type_with_ext, 'return_type, 'union_type) return_type_aux = [
 type type_with_ext = extends * type_ [@@deriving show]
 and type_ = (type_with_ext, return_type, union_type) type_aux [@@deriving show]
 and return_type = (type_with_ext, return_type, union_type) return_type_aux [@@deriving show]
-and union_type = (type_with_ext, return_type, union_type) union_type_aux [@@deriving show]
+and union_type = (type_with_ext, return_type, union_type, extends) union_type_aux [@@deriving show]
 and nullable_non_any = type_with_ext nullable_non_any_aux [@@deriving show]
 and non_any = (type_with_ext, return_type) non_any_aux [@@deriving show]
 
-type const_value = [
-  | `Bool of bool
-  | `Float of float
-  | `Int of int
-  | `Null
-] [@@deriving show]
+and const_value = [
+    | `Bool of bool
+    | `Float of float
+    | `Int of int
+    | `Null
+  ] [@@deriving show]
 
-type const = [
-  | primitive
-  | `Ident of string
-]  [@@deriving show]
+and const = [
+    | primitive
+    | `Ident of string
+  ]  [@@deriving show]
 
-type default_value = [
-  | `Const of const_value
-  | `String of string
-  | `EmptySequence
-] [@@deriving show]
+and default_value = [
+    | `Const of const_value
+    | `String of string
+    | `EmptySequence
+  ] [@@deriving show]
 
-type argument = [
-  | `Optional of type_with_ext * string * default_value option 
-  | `Variadic of type_ * string 
-  | `Fixed of type_ * string 
-] [@@deriving show]
+and argument = [
+    | `Optional of type_with_ext * string * default_value option 
+    | `Variadic of type_ * string 
+    | `Fixed of type_ * string 
+  ] [@@deriving show]
+
+and extended_argument = extends * argument
+
+and extended_attribute = [
+    | `NoArgs of string
+    | `ArgumentList of string * (extended_argument list)
+    | `NamedArgList of string * string * (extended_argument list)
+    | `Ident of string * string
+    | `IdentList of string * (string list)
+  ] [@@deriving show]
+
+and extends = [
+    | `Basic of extended_attribute list
+    | `Custom of string
+    | `None
+  ] [@@deriving show]
 
 type special = [
   | `Getter 

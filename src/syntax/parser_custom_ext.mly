@@ -1,0 +1,79 @@
+%parameter<Parse_extended : sig
+  val main: int -> int -> Ast.extends
+end>
+
+%%
+
+%public extendedAttributeList :
+    | LBRACKET extendedAttribute extendedAttributes RBRACKET { Parse_extended.main $startofs($1) $endofs }
+    |  { `None }
+
+extendedAttributes :
+    | COMMA extendedAttribute extendedAttributes { () }
+    |  { () }
+
+extendedAttribute :
+    | LPAR extendedAttributeInner RPAR extendedAttributeRest { () }
+    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeRest { () }
+    | LBRACE extendedAttributeInner RBRACE extendedAttributeRest { () }
+    | other extendedAttributeRest { () }
+
+extendedAttributeRest :
+    | extendedAttribute { () }
+    | { () }
+    
+extendedAttributeInner :
+    | LPAR extendedAttributeInner RPAR extendedAttributeInner { () }
+    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeInner { () }
+    | LBRACE extendedAttributeInner RBRACE extendedAttributeInner { () }
+    | otherOrComma extendedAttributeInner { () }
+    |  { () }
+
+other :
+    | INTVAL { () }
+    | FLOATVAL { () }
+    | IDENTIFIER { () }
+    | STRING { () }
+    | OTHER { () }
+    | MINUS { () }
+    | MINUSINFINITY { () }
+    | DOT { () }
+    | ELLIPSIS { () }
+    | COLON { () }
+    | SEMICOLON { () }
+    | LT { () }
+    | EQUAL { () }
+    | GT { () }
+    | QUESTION { () }
+    | BYTESTRING { () }
+    | DOMSTRING { () }
+    | FROZENARRAY { () }
+    | INFINITY { () }
+    | NAN { () }
+    | USVSTRING { () }
+    | ANY { () }
+    | BOOLEAN { () }
+    | BYTE { () }
+    | DOUBLE { () }
+    | FALSE { () }
+    | FLOAT { () }
+    | LONG { () }
+    | NULL { () }
+    | OBJECT { () }
+    | OCTET { () }
+    | OR { () }
+    | OPTIONAL { () }
+    | SEQUENCE { () }
+    | SHORT { () }
+    | TRUE { () }
+    | UNSIGNED { () }
+    | VOID { () }
+    | argumentNameKeyword { () }
+    | bufferRelatedType { () }
+
+otherOrComma :
+    | other { () }
+    | COMMA { () }
+
+
+

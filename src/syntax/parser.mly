@@ -10,12 +10,6 @@
       if is_null then `Nullable (value :> nullable_non_any) else (value :> non_any)
 %}
 
-%parameter<Parse_extended : sig
-  val main: int -> int -> string
-end>
-
-
-
 %start main
 %type < Ast.definitions > main
 %type < Ast.non_any > nonAnyType
@@ -42,7 +36,7 @@ callbackOrInterface :
     | CALLBACK callbackRestOrInterface   { `Callback $2 }
     | interface   { `Interface $1 }
 
-argumentNameKeyword :
+%public argumentNameKeyword :
     | ATTRIBUTE { attribute }
     | CALLBACK { callback }
     | CONST { const }
@@ -186,7 +180,7 @@ optionalIdentifier :
     | IDENTIFIER { Some $1 }
     |  { None }
 
-argumentList :
+%public argumentList :
     | argument arguments { $1 :: $2 }
     |  { [] }
 
@@ -245,7 +239,7 @@ serializationPatternList :
     | IDENTIFIER identifiers { `Identifiers ($1 :: $2) }
     |  { `None }
 
-identifiers :
+%public identifiers :
     | COMMA IDENTIFIER identifiers { $2 :: $3 }
     |  { [] }
 
@@ -415,7 +409,7 @@ null :
     | QUESTION { true }
     |  { false }
 
-bufferRelatedType :
+%public bufferRelatedType :
     | ARRAYBUFFER { `ArrayBuffer }
     | DATAVIEW { `DataView }
     | INT8ARRAY { `Int8Array }
@@ -427,77 +421,4 @@ bufferRelatedType :
     | UINT8CLAMPEDARRAY { `Uint8Clampedarray }
     | FLOAT32ARRAY { `Float32Array }
     | FLOAT64ARRAY { `Float64Array }
-
-extendedAttributeList :
-    | LBRACKET extendedAttribute extendedAttributes RBRACKET { Some(Parse_extended.main $startofs($1) $endofs) }
-    |  { None }
-
-extendedAttributes :
-    | COMMA extendedAttribute extendedAttributes { () }
-    |  { () }
-
-extendedAttribute :
-    | LPAR extendedAttributeInner RPAR extendedAttributeRest { () }
-    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeRest { () }
-    | LBRACE extendedAttributeInner RBRACE extendedAttributeRest { () }
-    | other extendedAttributeRest { () }
-
-extendedAttributeRest :
-    | extendedAttribute { () }
-    | { () }
-    
-extendedAttributeInner :
-    | LPAR extendedAttributeInner RPAR extendedAttributeInner { () }
-    | LBRACKET extendedAttributeInner RBRACKET extendedAttributeInner { () }
-    | LBRACE extendedAttributeInner RBRACE extendedAttributeInner { () }
-    | otherOrComma extendedAttributeInner { () }
-    |  { () }
-
-other :
-    | INTVAL { () }
-    | FLOATVAL { () }
-    | IDENTIFIER { () }
-    | STRING { () }
-    | OTHER { () }
-    | MINUS { () }
-    | MINUSINFINITY { () }
-    | DOT { () }
-    | ELLIPSIS { () }
-    | COLON { () }
-    | SEMICOLON { () }
-    | LT { () }
-    | EQUAL { () }
-    | GT { () }
-    | QUESTION { () }
-    | BYTESTRING { () }
-    | DOMSTRING { () }
-    | FROZENARRAY { () }
-    | INFINITY { () }
-    | NAN { () }
-    | USVSTRING { () }
-    | ANY { () }
-    | BOOLEAN { () }
-    | BYTE { () }
-    | DOUBLE { () }
-    | FALSE { () }
-    | FLOAT { () }
-    | LONG { () }
-    | NULL { () }
-    | OBJECT { () }
-    | OCTET { () }
-    | OR { () }
-    | OPTIONAL { () }
-    | SEQUENCE { () }
-    | SHORT { () }
-    | TRUE { () }
-    | UNSIGNED { () }
-    | VOID { () }
-    | argumentNameKeyword { () }
-    | bufferRelatedType { () }
-
-otherOrComma :
-    | other { () }
-    | COMMA { () }
-
-
 
