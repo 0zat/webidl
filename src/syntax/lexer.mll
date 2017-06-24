@@ -84,7 +84,7 @@ let int = decint | hexint | octint
 let float_no_exp = decdigit+ '.' decdigit* | '.' decdigit+
 let float_exp_part = ['E' 'e'] ['+' '-']? decdigit+
 let float = '-'? (float_no_exp float_exp_part? | decdigit+ float_exp_part)
-let identifier = ['A'-'Z' 'a'-'z' '_'] ['0'-'9' 'A'-'Z' 'a'-'z' '_']*
+let identifier = ['A'-'Z' 'a'-'z' '_'] ['0'-'9' 'A'-'Z' 'a'-'z' '_' '-']*
 let spaces = ['\t''\r'' ']+
 let other = [^'\t''\r''A'-'Z''0'-'9''a'-'z']
 
