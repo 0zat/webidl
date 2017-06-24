@@ -6,10 +6,12 @@ end>
 
 %public extendedAttributeList :
     | LBRACKET extendedAttribute extendedAttributes RBRACKET { Parse_extended.main $startofs($1) $endofs }
+    | emptyExtendedAttributeList { $1 } /* support for non standard Web IDL */
     |  { `None }
 
 extendedAttributes :
     | COMMA extendedAttribute extendedAttributes { () }
+    | commnaEnd { $1 } /* support for non standard Web IDL */
     |  { () }
 
 extendedAttribute :

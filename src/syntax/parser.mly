@@ -202,7 +202,7 @@ ellipsis :
     | ELLIPSIS { true }
     |  { false }
 
-returnType :
+%public returnType :
     | type_ { $1 :> return_type }
     | VOID { `Void }
 
@@ -224,7 +224,7 @@ serializerRest :
     | SEMICOLON { `None }
 
 serializationPattern :
-    | LBRACE serializationPatternMap RBRACE { `PatternMap $2}
+    | LBRACE serializationPatternMap RBRACE { `PatternMap $2 }
     | LBRACKET serializationPatternList RBRACKET { `PatternList $2 }
     | IDENTIFIER { `Ident $1 }
 
@@ -232,6 +232,7 @@ serializationPatternMap :
     | GETTER { `Getter }
     | INHERIT identifiers { `Inherit $2 }
     | IDENTIFIER identifiers { `Identifiers ($1 :: $2) }
+    | attributeSerializetion { $1 } /* support for non standard Web IDL */
     |  { `None }
 
 serializationPatternList :
@@ -333,7 +334,7 @@ type_ :
     | singleType { $1 }
     | unionType null { if $2 then `Nullable (`Union $1) else (`Union $1) }
 
-typeWithExtendedAttributes :
+%public typeWithExtendedAttributes :
     | extendedAttributeList singleType  { ($1, $2) }
     | extendedAttributeList unionType null 
     { if $3 then ($1, `Nullable (`Union $2)) else ($1, (`Union $2)) }
@@ -354,7 +355,7 @@ unionMemberTypes :
     | OR unionMemberType unionMemberTypes { $2 :: $3 }
     |  { [] }
 
-nonAnyType :
+%public nonAnyType :
     | promiseType  { `Promise $1 }
     | primitiveType null { to_non_any $2 $1 }
     | stringType null { to_non_any $2 $1 }
@@ -366,6 +367,7 @@ nonAnyType :
     | bufferRelatedType null { to_non_any $2 $1 }
     | FROZENARRAY LT typeWithExtendedAttributes GT null { to_non_any $5 (`FrozenArray $3) }
     | recordType null { to_non_any $2 (`Record $1) }
+    | legacyArray { $1 } /* support for non standard Web IDL */
 
 primitiveType :
     | unsignedIntegerType { $1 }
@@ -401,11 +403,13 @@ stringType :
 
 promiseType :
     | PROMISE LT returnType GT { $3 }
+    | promiseOnly { $1 } /* support for non standard Web IDL */
+    | promiseNull { $1 } /* support for non standard Web IDL */
 
 recordType :
     | RECORD LT stringType COMMA typeWithExtendedAttributes GT { ($3, $5) }
 
-null :
+%public null :
     | QUESTION { true }
     |  { false }
 

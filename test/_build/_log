@@ -1,0 +1,8 @@
+### Starting build.
+# Target: test.ml.depends, tags: { package(ppx_deriving.show), package(webidl), extension:ml, file:test.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ppx_deriving.show -package webidl -modules test.ml > test.ml.depends # cached
+# Target: test.cmo, tags: { package(ppx_deriving.show), package(webidl), byte, compile, extension:cmo, extension:ml, file:test.cmo, file:test.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ppx_deriving.show -package webidl -o test.cmo test.ml # cached
+# Target: test.byte, tags: { package(ppx_deriving.show), package(webidl), byte, dont_link_with, extension:byte, file:test.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package ppx_deriving.show -package webidl test.cmo -o test.byte
+# Compilation successful.
