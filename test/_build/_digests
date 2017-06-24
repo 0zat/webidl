@@ -1,4 +1,0 @@
-"Rule: ocaml dependencies ml (%=test )": "\003\127h\247rF[J\227\141{fn\144\165\179"
-"Resource: /home/zat/code/webidl/test/test.ml": "\237\230\029i\1330\165\137\152\200\2205M\248\188G"
-"Rule: ocaml: ml -> cmo & cmi (%=test )": "\159\179\183B\180\n\025VID\143(R\025\0298"
-"Rule: ocaml: cmo* -> byte (%=test )": "\216\212\248(!\153\004\139\196&\232]\234s5)"
