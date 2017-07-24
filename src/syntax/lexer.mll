@@ -34,7 +34,6 @@
           getter , GETTER ;
           deleter , DELETER ;
           legacycaller , LEGACYCALLER ;
-          serializer , SERIALIZER ;
           stringifier , STRINGIFIER ;
           maplike , MAPLIKE ;
           setlike , SETLIKE ;

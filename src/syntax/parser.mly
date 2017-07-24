@@ -53,7 +53,6 @@ callbackOrInterface :
     | NAMESPACE { namespace }
     | PARTIAL { partial }
     | REQUIRED { required }
-    | SERIALIZER { serializer }
     | SETLIKE { setlike }
     | SETTER { setter }
     | STATIC { static }
@@ -88,7 +87,6 @@ interfaceMembers :
 interfaceMember :
     | const { `Const $1 } 
     | operation { `Operation $1 }
-    | serializer { `Serializer $1 }
     | stringifier { `Stringifier $1 }
     | staticMember { `Static $1 }
     | iterable { `Iterable $1 }
@@ -214,31 +212,6 @@ stringifierRest :
      { if $1 then `ReadOnly (`AttributeRest $2) else (`AttributeRest $2) }
     | returnType operationRest { `NoSpecialOperation($1, $2) }
     | SEMICOLON { `None }
-
-serializer :
-    | SERIALIZER serializerRest { $2 }
-
-serializerRest :
-    | operationRest { `OperationRest $1 }
-    | EQUAL serializationPattern SEMICOLON { $2 }
-    | SEMICOLON { `None }
-
-serializationPattern :
-    | LBRACE serializationPatternMap RBRACE { `PatternMap $2 }
-    | LBRACKET serializationPatternList RBRACKET { `PatternList $2 }
-    | IDENTIFIER { `Ident $1 }
-
-serializationPatternMap :
-    | GETTER { `Getter }
-    | INHERIT identifiers { `Inherit $2 }
-    | IDENTIFIER identifiers { `Identifiers ($1 :: $2) }
-    | attributeSerializetion { $1 } /* support for non standard Web IDL */
-    |  { `None }
-
-serializationPatternList :
-    | GETTER { `Getter }
-    | IDENTIFIER identifiers { `Identifiers ($1 :: $2) }
-    |  { `None }
 
 %public identifiers :
     | COMMA IDENTIFIER identifiers { $2 :: $3 }

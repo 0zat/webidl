@@ -1,4 +1,4 @@
-
+(*
 let test_lexerror () =
   try
     let _ = Webidl.Parse.data_from_file ~strict:false "lex_error.idl" in ()
@@ -18,8 +18,7 @@ let test_parseerror () =
       e = { Webidl.Parse.src = "parse_error.idl"; src_type = Webidl.Parse.File; start_pos = (6, 18);
             end_pos = (6, 27); token = "DOMString" ; strict = false}
     )
-
-
+*)
 let () =
   try
     Webidl.Parse.data_from_file ~strict:false Sys.argv.(1) (* 1. *)
