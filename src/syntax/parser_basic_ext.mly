@@ -8,16 +8,16 @@
 %}
 
 %start ext_main
-%type < Ast.extends > ext_main
+%type < Ast.extended_attribute > ext_main
 
 %%
 
 ext_main :
-    | extendedAttributeList EOF { $1 }
+    | extendedAttribute EOF { $1 }
 
 %public extendedAttributeList :
-    | LBRACKET extendedAttribute extendedAttributes RBRACKET { `Basic ($2 :: $3) }
-    |  { `Basic [] }
+    | LBRACKET extendedAttribute extendedAttributes RBRACKET { ($2 :: $3) }
+    |  { [] }
 
 extendedAttributes :
     | COMMA extendedAttribute extendedAttributes { $2 :: $3 }

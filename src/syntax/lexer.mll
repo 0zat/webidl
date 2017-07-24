@@ -86,14 +86,14 @@ let float = '-'? (float_no_exp float_exp_part? | decdigit+ float_exp_part)
 let identifier = ['A'-'Z' 'a'-'z' '_'] ['0'-'9' 'A'-'Z' 'a'-'z' '_' '-']*
 let spaces = ['\t''\r'' ']+
 let other = [^'\t''\r''A'-'Z''0'-'9''a'-'z']
+let comment = ("//" [^'\n']*)|("/*"(_|'\n')*? "*/")
+let string = '"' [^'"']* '"'
 
 rule read = parse
-  | '#' identifier { skip_to_eol lexbuf }
   | '\n' { new_line lexbuf; read lexbuf }
   | spaces { read lexbuf }
-  | '/' '*' { skip_comment lexbuf }
-  | '/' '/' { skip_to_eol lexbuf }
-  | '"' { read_string (Buffer.create 10) lexbuf }
+  | comment { read lexbuf }
+  | '"' ([^'"']* as str) '"' { STRING str }
   | "(" { LPAR }
   | ")" { RPAR }
   | "[" { LBRACKET }
@@ -122,22 +122,3 @@ rule read = parse
   | other as o { OTHER o}
   | eof { EOF }
   | _  { raise Parsing.Parse_error }
-
-and read_string buf = parse
-  | '\n' { new_line lexbuf; Buffer.add_char buf '\n'; read_string buf lexbuf }
-  | '"' { STRING (Buffer.contents buf) }
-  | [^'"''\n']* { Buffer.add_string buf (Lexing.lexeme lexbuf); read_string buf lexbuf }
-  | eof { raise Parsing.Parse_error }
-
-and skip_comment = parse
-  | '\n' { new_line lexbuf; skip_comment lexbuf }
-  | "*/" { read lexbuf }
-  | '*' [^'/''\n'] { skip_comment lexbuf }
-  | '*' '\n' { new_line lexbuf; skip_comment lexbuf }
-  | [^'*''\n']* { skip_comment lexbuf }
-  | eof { raise Parsing.Parse_error }
-
-and skip_to_eol = parse
-  | '\n' { new_line lexbuf; read lexbuf }
-  | eof { EOF }
-  | [^'\n']* { skip_to_eol lexbuf }

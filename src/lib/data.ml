@@ -1,31 +1,5 @@
 open Syntax.Ast
-(*
-type argument =  Syntax.Ast.argument [@@deriving show]
-type default_value = Syntax.Ast.default_value [@@deriving show]
-type const_type = Syntax.Ast.const_type [@@deriving show]
-type const_value = Syntax.Ast.const_value [@@deriving show]
-type serializer = Syntax.Ast.serializer [@@deriving show]
 
-type extended_argument = extends * argument [@@deriving show]
-
-and extended_attribute = [
-    | `NoArgs of string
-    | `ArgumentList of string * (extended_argument list)
-    | `NamedArgList of string * string * (extended_argument list)
-    | `Ident of string * string
-    | `IdentList of string * (string list)
-    | `Custom of string
-  ] [@@deriving show]
-
-and extends = extended_attribute list
-
-type type_with_ext = extended_attribute list * type_ [@@deriving show]
-and type_ = (type_with_ext, return_type, union_type) Syntax.Ast.type_aux [@@deriving show]
-and return_type = (type_with_ext, return_type, union_type) Syntax.Ast.return_type_aux [@@deriving show]
-and union_type = (type_with_ext, return_type, union_type) Syntax.Ast.union_type_aux [@@deriving show]
-and nullable_non_any = type_with_ext Syntax.Ast.nullable_non_any_aux [@@deriving show]
-and non_any = (type_with_ext, return_type) Syntax.Ast.non_any_aux [@@deriving show]
-*)
 type attribute = {
   is_static : bool ;
   is_readonly : bool ;
@@ -94,7 +68,6 @@ type setlike = {
 type interface_member = [
   | `Const of const_type * string * const_value
   | `Operation of operation
-  | `Serializer of serializer
   | `Stringifier of [ operation_or_attribute | `None ]
   | `Iterable of type_with_ext * (type_with_ext option) 
   | `Attribute of attribute

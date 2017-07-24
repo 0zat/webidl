@@ -1,18 +1,20 @@
 %parameter<Parse_extended : sig
-  val main: int -> int -> Ast.extends
+  val main: int -> int -> Ast.extended_attribute
 end>
 
 %%
 
 %public extendedAttributeList :
-    | LBRACKET extendedAttribute extendedAttributes RBRACKET { Parse_extended.main $startofs($1) $endofs }
+    | LBRACKET extendedAttribute extendedAttributes RBRACKET 
+    { (Parse_extended.main $startofs($2) $endofs($2)) :: $3 }
     | emptyExtendedAttributeList { $1 } /* support for non standard Web IDL */
-    |  { `None }
+    |  { [] }
 
 extendedAttributes :
-    | COMMA extendedAttribute extendedAttributes { () }
+    | COMMA extendedAttribute extendedAttributes 
+    { (Parse_extended.main $startofs($2) $endofs($2)) :: $3 }
     | commnaEnd { $1 } /* support for non standard Web IDL */
-    |  { () }
+    |  { [] }
 
 extendedAttribute :
     | LPAR extendedAttributeInner RPAR extendedAttributeRest { () }

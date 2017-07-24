@@ -42,19 +42,19 @@ let get_error_info strict src src_type get_substr lexbuf =
 let main ?(trace = false) ?(strict = true) src src_type lexbuf get_substr =
   let _ = Parsing.set_trace trace in
   let module Strict = struct let strict = strict end in
-  let module Parser_extend = Syntax.Parser_extend.Make(Strict) in
-  let module Param = struct 
+  let module Parser_basic_extend = Syntax.Parser_extend.Make(Strict) in
+  let module Parser_extend = struct 
     let main sp ep =
       let ext = get_substr sp ep in
       let lexbuf = Lexing.from_string ext in
       try 
-        Parser_extend.ext_main Syntax.Lexer.read lexbuf
+        Parser_basic_extend.ext_main Syntax.Lexer.read lexbuf
       with
-      | Parser_extend.Error
+      | Parser_basic_extend.Error
       | Parsing.Parse_error -> `Custom ext
   end 
   in
-  let module Parser = Syntax.Parser.Make(Strict)(Param) in
+  let module Parser = Syntax.Parser.Make(Strict)(Parser_extend) in
   try
     Parser.main Syntax.Lexer.read lexbuf 
   with

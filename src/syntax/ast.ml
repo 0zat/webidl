@@ -119,6 +119,7 @@ and argument = [
 and extended_argument = extends * argument
 
 and extended_attribute = [
+    | `Custom of string
     | `NoArgs of string
     | `ArgumentList of string * (extended_argument list)
     | `NamedArgList of string * string * (extended_argument list)
@@ -126,11 +127,8 @@ and extended_attribute = [
     | `IdentList of string * (string list)
   ] [@@deriving show]
 
-and extends = [
-    | `Basic of extended_attribute list
-    | `Custom of string
-    | `None
-  ] [@@deriving show]
+and extends = extended_attribute list
+[@@deriving show]
 
 type special = [
   | `Getter 
@@ -171,20 +169,6 @@ type namespace_member = [
 type namespace = string * (extends * namespace_member) list
 [@@deriving show]
 
-type pattern_list = [
-  | `Getter
-  | `Identifiers of string list
-  | `None
-] [@@deriving show]
-
-type serializer = [
-  | `OperationRest of operation_rest
-  | `PatternMap of [ pattern_list | `Inherit of string list]
-  | `PatternList of pattern_list
-  | `Ident of string
-  | `None
-] [@@deriving show]
-
 type maplike = type_with_ext * type_with_ext [@@deriving show]
 
 type setlike = type_with_ext [@@deriving show]
@@ -212,7 +196,6 @@ type interface_member = [
   | `Static of static_member
   | `Const of const_type * string * const_value
   | `Operation of operation
-  | `Serializer of serializer
   | `Stringifier of [ static_member| `None ]
   | `Iterable of type_with_ext * (type_with_ext option) 
   | `Attribute of attribute

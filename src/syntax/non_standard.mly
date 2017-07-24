@@ -17,7 +17,7 @@ end>
   | nonAnyType LBRACKET RBRACKET null 
   { 
     return_if_strict Param.strict
-      (to_non_any $4 (`FrozenArray (`None, ($1 :> type_)))) 
+      (to_non_any $4 (`FrozenArray ([], ($1 :> type_)))) 
   }
 
 %public promiseOnly :
@@ -30,7 +30,7 @@ end>
   | ATTRIBUTE  { return_if_strict Param.strict (`Identifiers [attribute]) }
 
 %public commnaEnd :
-  | COMMA { return_if_strict Param.strict () } 
+  | COMMA { return_if_strict Param.strict [] } 
 
 %public emptyExtendedAttributeList :
-  | LBRACKET RBRACKET { return_if_strict Param.strict `None }
+  | LBRACKET RBRACKET { return_if_strict Param.strict [] }
