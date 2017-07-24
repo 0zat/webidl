@@ -84,15 +84,17 @@ let float_no_exp = decdigit+ '.' decdigit* | '.' decdigit+
 let float_exp_part = ['E' 'e'] ['+' '-']? decdigit+
 let float = '-'? (float_no_exp float_exp_part? | decdigit+ float_exp_part)
 let identifier = ['A'-'Z' 'a'-'z' '_'] ['0'-'9' 'A'-'Z' 'a'-'z' '_' '-']*
-let spaces = ['\t''\r'' ']+
+let spaces = ['\t'' ']+
 let other = [^'\t''\r''A'-'Z''0'-'9''a'-'z']
-let comment = ("//" [^'\n']*)|("/*"(_|'\n')*? "*/")
+let comment_line = ("//"[^'\n''\r']*'\n')
+let comment_region_start = "/*"
 let string = '"' [^'"']* '"'
 
 rule read = parse
-  | '\n' { new_line lexbuf; read lexbuf }
+  | ['\n''\r'] { new_line lexbuf; read lexbuf }
   | spaces { read lexbuf }
-  | comment { read lexbuf }
+  | comment_line { new_line lexbuf; read lexbuf }
+  | comment_region_start { skip_comment lexbuf }
   | '"' ([^'"']* as str) '"' { STRING str }
   | "(" { LPAR }
   | ")" { RPAR }
@@ -122,3 +124,9 @@ rule read = parse
   | other as o { OTHER o}
   | eof { EOF }
   | _  { raise Parsing.Parse_error }
+
+and skip_comment = parse
+  | "*/" { read lexbuf }
+  | '\n' { new_line lexbuf; skip_comment lexbuf }
+  | [^ '\n'] { skip_comment lexbuf }
+  | eof { failwith "Unterminated comment" }

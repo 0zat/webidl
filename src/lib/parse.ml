@@ -39,8 +39,7 @@ let get_error_info strict src src_type get_substr lexbuf =
   let around = get_around get_substr start.pos_cnum end_.pos_cnum in 
   { src; src_type; start_pos; end_pos; token; strict; around }
 
-let main ?(trace = false) ?(strict = true) src src_type lexbuf get_substr =
-  let _ = Parsing.set_trace trace in
+let main ?(strict = true) src src_type lexbuf get_substr =
   let module Strict = struct let strict = strict end in
   let module Parser_basic_extend = Syntax.Parser_extend.Make(Strict) in
   let module Parser_extend = struct 
