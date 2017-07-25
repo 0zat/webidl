@@ -33,11 +33,3 @@ if there is an syntax error, `exception Syntax_error` is raised.
 
 4. `Webidl.Parse.show_syntax_error`  
 print infomation of parse error
-
-## recent changes
-* version 1.2
-    * support for Web IDL Editor’s Draft, 1 June 2017
-        * data types changed
-    * refactoring
-        * remove Ast files
-    * remove menhir dependence
