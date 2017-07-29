@@ -5,7 +5,9 @@
 opam install webidl
 
 ## Usage example
-an example code is the below.  
+* [gen-bs](https://github.com/0zat/gen-bs) is a sample application which uses this library
+  * convert Web IDL files to a [bucklescript](https://github.com/bucklescript/bucklescript) code
+* an example code is the below.  
 ```ocaml
 let () =
   try
