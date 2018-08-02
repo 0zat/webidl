@@ -24,7 +24,7 @@ definitions :
     |    { [] }
 
 definition :
-    | callbackOrInterfaceOr    { $1 }
+    | callbackOrInterface    { $1 }
     | namespace   { `Namespace $1 }
     | partial   { `Partial $1 }
     | dictionary   { `Dictionary $1 }
