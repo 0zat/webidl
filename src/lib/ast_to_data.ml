@@ -80,6 +80,7 @@ let of_callback = function
 
 let of_definition : Ast.definition -> Data.definition = function
   | `Callback callback -> `Callback(of_callback callback)
+  | `Includes includes -> `Includes includes
   | `Interface interface -> of_interface interface
   | `Namespace namespace -> of_namespace namespace
   | `Partial partial -> `Partial(of_partial partial)

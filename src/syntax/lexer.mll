@@ -48,6 +48,7 @@
           dictionary , DICTIONARY ;
           enum , ENUM ;
           implements , IMPLEMENTS ;
+          includes , INCLUDES ;
           inherit_ , INHERIT ;
           attribute , ATTRIBUTE ;
           typedef , TYPEDEF ;

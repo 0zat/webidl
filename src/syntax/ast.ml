@@ -225,6 +225,7 @@ type definition = [
   | `Dictionary of dictionary
   | `Enum of string * (string list)
   | `Typedef of type_with_ext * string
+  | `Includes of string * string
   | `Implements of string * string
 ] [@@deriving show]
 

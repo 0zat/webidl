@@ -24,12 +24,13 @@ definitions :
     |    { [] }
 
 definition :
-    | callbackOrInterface    { $1 }
+    | callbackOrInterfaceOr    { $1 }
     | namespace   { `Namespace $1 }
     | partial   { `Partial $1 }
     | dictionary   { `Dictionary $1 }
     | enum   { `Enum $1 }
     | typedef   { `Typedef $1 }
+    | includes   { `Includes $1 }
     | implementsStatement   { `Implements $1 }
 
 callbackOrInterface :
@@ -45,6 +46,7 @@ callbackOrInterface :
     | ENUM { enum }
     | GETTER { getter }
     | IMPLEMENTS { implements }
+    | INCLUDES { includes }
     | INHERIT { inherit_ }
     | INTERFACE { interface }
     | ITERABLE { iterable }
@@ -302,6 +304,9 @@ typedef :
 
 implementsStatement :
     | IDENTIFIER IMPLEMENTS IDENTIFIER SEMICOLON { ($1, $3) }
+
+includes :
+    | IDENTIFIER INCLUDES IDENTIFIER SEMICOLON { ($1, $3) }
 
 type_ :
     | singleType { $1 }

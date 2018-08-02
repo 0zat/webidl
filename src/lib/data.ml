@@ -101,6 +101,7 @@ type definition = [
   | `Enum of string * (string list)
   | `Typedef of type_with_ext * string
   | `Implements of string * string
+  | `Includes of string * string
 ] [@@deriving show]
 
 type definitions = (extends * definition) list [@@deriving show]
