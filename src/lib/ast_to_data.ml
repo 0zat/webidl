@@ -42,7 +42,19 @@ let of_interface_member : Ast.interface_member -> Data.interface_member = functi
   | `Maplike(key_type, value_type) -> `Maplike {is_readonly = false; key_type; value_type}
   | `Setlike key_type -> `Setlike {is_readonly = false; key_type}
 
+let of_mixin_member : Ast.mixin_member -> Data.mixin_member = function
+  | `Const const -> `Const const
+  | `Operation operation -> of_operation [] false operation
+  | `Stringifier stringifier -> `Stringifier (of_stringifier stringifier)
+  | `ReadOnly member -> of_readonly member 
+  | `Attribute `Inherit `AttributeRest attribute -> of_attribute [`Inherit] attribute
+  | `Attribute `AttributeRest attribute -> of_attribute [] attribute
+
 let map_snd f dst = List.map (fun (x, y) -> (x, f y)) dst
+
+let of_mixin (ident, members) = 
+  let mixin_members = map_snd of_mixin_member members in
+  `Mixin {ident ; mixin_members}
 
 let of_interface (ident, inheritance, members) = 
   let interface_members = map_snd of_interface_member members in
@@ -70,6 +82,7 @@ let of_dictionary (ident, inheritance, members) =
 
 let of_partial = function
   | `PartialInterface(ident, members) -> of_interface (ident, None, members)
+  | `Mixin mixin -> of_mixin mixin
   | `PartialDictionary(ident, members) -> of_dictionary (ident, None, members)
   | `Namespace namespace -> of_namespace namespace
 
@@ -82,6 +95,7 @@ let of_definition : Ast.definition -> Data.definition = function
   | `Callback callback -> `Callback(of_callback callback)
   | `Includes includes -> `Includes includes
   | `Interface interface -> of_interface interface
+  | `Mixin mixin -> of_mixin mixin
   | `Namespace namespace -> of_namespace namespace
   | `Partial partial -> `Partial(of_partial partial)
   | `Dictionary dictionary -> of_dictionary dictionary

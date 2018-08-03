@@ -24,7 +24,7 @@ definitions :
     |    { [] }
 
 definition :
-    | callbackOrInterface    { $1 }
+    | callbackOrInterfaceOrMixin    { $1 }
     | namespace   { `Namespace $1 }
     | partial   { `Partial $1 }
     | dictionary   { `Dictionary $1 }
@@ -33,9 +33,9 @@ definition :
     | includes   { `Includes $1 }
     | implementsStatement   { `Implements $1 }
 
-callbackOrInterface :
+callbackOrInterfaceOrMixin :
     | CALLBACK callbackRestOrInterface   { `Callback $2 }
-    | interface   { `Interface $1 }
+    | INTERFACE interfaceOrMixin   { $2 }
 
 %public argumentNameKeyword :
     | ATTRIBUTE { attribute }
@@ -52,6 +52,7 @@ callbackOrInterface :
     | ITERABLE { iterable }
     | LEGACYCALLER { legacycaller }
     | MAPLIKE { maplike }
+    | MIXIN { mixin }
     | NAMESPACE { namespace }
     | PARTIAL { partial }
     | REQUIRED { required }
@@ -64,23 +65,31 @@ callbackOrInterface :
 
 callbackRestOrInterface :
     | callbackRest   { `CallbackRest $1 }
-    | interface   { `Interface $1 }
+    | interfaceRest   { `Interface $1 }
 
-interface :
-    | INTERFACE IDENTIFIER inheritance LBRACE interfaceMembers RBRACE SEMICOLON  
-    { ($2, $3, $5) }
-     
+interfaceOrMixin :
+    | interfaceRest { `Interface $1 }
+    | mixinRest { `Mixin $1 }
+
+interfaceRest :
+    | IDENTIFIER inheritance LBRACE interfaceMembers RBRACE SEMICOLON  
+    { ($1, $2, $4) }
+
 partial :
     | PARTIAL partialDefinition   { $2 }
 
 partialDefinition :
-    | partialInterface   { `PartialInterface $1 }
+    | INTERFACE partialInterfaceOrPartialMixin   { $2 }
     | partialDictionary   { `PartialDictionary $1 }
     | namespace   { `Namespace $1 }
 
+partialInterfaceOrPartialMixin :
+    | partialInterface { `PartialInterface $1 } 
+    | mixinRest { `Mixin $1 }
+
 partialInterface :
-    | INTERFACE IDENTIFIER LBRACE interfaceMembers RBRACE SEMICOLON   
-    { ($2, $4) }
+    | IDENTIFIER LBRACE interfaceMembers RBRACE SEMICOLON   
+    { ($1, $3) }
 
 interfaceMembers :
     | extendedAttributeList interfaceMember interfaceMembers   { ($1, $2) :: $3 }
@@ -96,6 +105,21 @@ interfaceMember :
     | readWriteAttribute { `Attribute $1 }
     | readWriteMaplike { `Maplike $1 }
     | readWriteSetlike { `Setlike $1 }
+
+mixinRest :
+    | MIXIN IDENTIFIER LBRACE mixinMembers RBRACE SEMICOLON  
+    { ($2, $4) }
+
+mixinMembers :
+    | extendedAttributeList mixinMember mixinMembers   { ($1, $2) :: $3 }
+    |    { [] }
+
+mixinMember :
+    | const { `Const $1 } 
+    | operation { `Operation $1 }
+    | stringifier { `Stringifier $1 }
+    | readOnlyMember { `ReadOnly $1 }
+    | readWriteAttribute { `Attribute $1 }
 
 inheritance :
     | COLON IDENTIFIER   { Some $2 }

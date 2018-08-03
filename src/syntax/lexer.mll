@@ -44,6 +44,7 @@
           namespace , NAMESPACE ;
           callback , CALLBACK ;
           partial , PARTIAL ;
+          mixin , MIXIN ;
           interface , INTERFACE ;
           dictionary , DICTIONARY ;
           enum , ENUM ;

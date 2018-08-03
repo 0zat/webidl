@@ -206,8 +206,20 @@ type interface_member = [
 type interface = string * string option * (extends * interface_member) list 
 [@@deriving show]
 
+type mixin_member = [
+  | `Attribute of attribute
+  | `ReadOnly of readonly_member
+  | `Const of const_type * string * const_value
+  | `Operation of operation
+  | `Stringifier of [ static_member| `None ]
+] [@@deriving show]
+
+type mixin = string * (extends * mixin_member) list 
+[@@deriving show]
+
 type partial = [
   | `PartialInterface of string * (extends * interface_member) list
+  | `Mixin of mixin
   | `PartialDictionary of string * (extends * dictionary_member) list
   | `Namespace of namespace
 ] [@@deriving show]
@@ -220,6 +232,7 @@ type callback = [
 type definition = [
   | `Callback of callback
   | `Interface of interface
+  | `Mixin of mixin
   | `Namespace of namespace
   | `Partial of partial
   | `Dictionary of dictionary
