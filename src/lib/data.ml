@@ -81,8 +81,23 @@ type interface = {
   interface_members : (extends * interface_member) list;
 } [@@deriving show]
 
+type mixin_member = [
+  | `Const of const_type * string * const_value
+  | `Operation of operation
+  | `Stringifier of [ operation_or_attribute | `None ]
+  | `Attribute of attribute
+  | `Maplike of maplike 
+  | `Setlike of setlike
+] [@@deriving show]
+
+type mixin = {
+  ident : string ;
+  mixin_members : (extends * mixin_member) list;
+} [@@deriving show]
+
 type partial = [
   | `Interface of interface
+  | `Mixin of mixin
   | `Dictionary of dictionary
   | `Namespace of namespace
 ] [@@deriving show]
@@ -95,12 +110,14 @@ type callback = [
 type definition = [
   | `Callback of callback
   | `Interface of interface
+  | `Mixin of mixin
   | `Namespace of namespace
   | `Partial of partial
   | `Dictionary of dictionary
   | `Enum of string * (string list)
   | `Typedef of type_with_ext * string
   | `Implements of string * string
+  | `Includes of string * string
 ] [@@deriving show]
 
 type definitions = (extends * definition) list [@@deriving show]
