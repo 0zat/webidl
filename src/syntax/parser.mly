@@ -1,6 +1,6 @@
 %{
     (* Web IDL parser
-     * The below rules are based on Editor’s Draft, 1 June 2017
+     * The below rules are based on Editor’s Draft, 6 August 2018
      * https://heycam.github.io/webidl/#idl-grammar 
     *)
     open Ast
