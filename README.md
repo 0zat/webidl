@@ -1,5 +1,6 @@
 # Webidl
- a parser of [Web IDL](https://heycam.github.io/webidl) 
+ a parser of [Web IDL](https://heycam.github.io/webidl)   
+ latest version v1.4 surrpots Web IDL Editor’s Draft, 6 August 2018
 
 ## Installation
 opam install webidl
